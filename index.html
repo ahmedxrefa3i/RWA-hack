@@ -1,212 +1,329 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-  <!-- Block Desktop Access -->
-  <script>
-    const ua = navigator.userAgent.toLowerCase();
-    const isMobile = /android|iphone|ipad|ipod/.test(ua);
-    const isEmulator = /wv|google_sdk|sdk_google|emulator/.test(ua);
-    if (!(isMobile || isEmulator)) {
-      window.addEventListener("DOMContentLoaded", () => {
-        document.body.innerHTML = `
-          <style>
-            body {
-              background-color: black !important;
-              color: white;
-              font-family: sans-serif;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100vh;
-              text-align: center;
-              margin: 0;
-            }
-          </style>
-          <div>
-            <h1>🚫 كمبيوتر؟ لا يا باشا مش هينفع</h1>
-            <p>افتح الموقع من موبايل أو محاكي علشان يكون حسابك في أمان.</p>
-          </div>
-        `;
-      });
-    }
-  </script>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rico World - Access Portal</title>
-  <meta name="description" content="Rico World platform for accessing protected content">
-  <meta name="keywords" content="Rico World, Gaming, Access Codes">
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Audiowide:wght@400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-  <!-- CSS Files -->
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/animations.css">
-  <link rel="stylesheet" href="css/responsive.css">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rico World - Access Portal</title>
+    <meta name="description" content="Rico World platform for accessing protected content">
+    <meta name="keywords" content="Rico World, Gaming, Access Codes">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide:wght@400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
 </head>
 <body>
-  <!-- Loading Screen -->
-  <div id="loadingScreen" class="loading-screen">
-    <div class="loading-content">
-      <div class="loading-logo">
-        <div class="logo-circle">
-          <span>RW</span>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <div class="logo-circle">
+                    <span>RW</span>
+                </div>
+            </div>
+            <div class="loading-text">
+                <h2>RICO WORLD</h2>
+                <p>Loading...</p>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
         </div>
-      </div>
-      <div class="loading-text">
-        <h2>RICO WORLD</h2>
-        <p>Loading...</p>
-      </div>
-      <div class="loading-bar">
-        <div class="loading-progress"></div>
-      </div>
     </div>
-  </div>
 
-  <!-- Background Effects -->
-  <div class="background-effects">
-    <div class="stars"></div>
-    <div class="floating-particles"></div>
-  </div>
-
-  <!-- Navigation -->
-  <nav class="main-nav" id="mainNav">
-    <div class="nav-container">
-      <div class="nav-logo">
-        <span class="logo-text">RICO WORLD</span>
-      </div>
-      <div class="nav-menu">
-        <button class="nav-btn" onclick="showStats()">
-          <i class="fas fa-chart-line"></i>
-          <span>Statistics</span>
-        </button>
-        <button class="nav-btn" onclick="toggleTheme()">
-          <i class="fas fa-moon" id="themeIcon"></i>
-          <span>Dark Mode</span>
-        </button>
-        <button class="nav-btn" onclick="showSettings()">
-          <i class="fas fa-cog"></i>
-          <span>Settings</span>
-        </button>
-      </div>
+    <!-- Background Effects -->
+    <div class="background-effects">
+        <div class="stars"></div>
+        <div class="floating-particles"></div>
     </div>
-  </nav>
 
-  <!-- Back Button -->
-  <button class="back-btn" id="backBtn" onclick="goBack()" title="Go Back">
-    <i class="fas fa-home"></i>
-  </button>
-
-  <!-- Main Container -->
-  <div class="main-container" id="mainContainer">
-    <div class="container">
-      <!-- Logo Section -->
-      <div class="logo-section">
-        <div class="logo">
-          <span class="logo-text">RW</span>
-          <div class="logo-glow"></div>
+    <!-- Navigation -->
+    <nav class="main-nav" id="mainNav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-text">RICO WORLD</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-btn" onclick="showStats()">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Statistics</span>
+                </button>
+                <button class="nav-btn" onclick="toggleTheme()">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                    <span>Dark Mode</span>
+                </button>
+                <button class="nav-btn" onclick="showSettings()">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </button>
+            </div>
         </div>
-        <div class="logo-rings">
-          <div class="ring ring-1"></div>
-          <div class="ring ring-2"></div>
-          <div class="ring ring-3"></div>
+    </nav>
+
+    <!-- Back Button -->
+    <button class="back-btn" id="backBtn" onclick="goBack()" title="Go Back">
+        <i class="fas fa-home"></i>
+    </button>
+
+    <!-- Main Container -->
+    <div class="main-container" id="mainContainer">
+        <div class="container">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <div class="logo">
+                    <span class="logo-text">RW</span>
+                    <div class="logo-glow"></div>
+                </div>
+                <div class="logo-rings">
+                    <div class="ring ring-1"></div>
+                    <div class="ring ring-2"></div>
+                    <div class="ring ring-3"></div>
+                </div>
+            </div>
+
+            <!-- Title Section -->
+            <div class="title-section">
+                <h1 class="main-title">
+                    WELCOME TO RICO WORLD
+                    <span class="typing-dots">
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </span>
+                </h1>
+                <p class="subtitle">Enter access code to continue</p>
+            </div>
+
+            <!-- Access Form -->
+            <div class="access-form">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <input type="password" id="passwordInput" placeholder="Enter Access Code" autocomplete="off">
+                        <div class="input-border"></div>
+                        <div class="input-glow"></div>
+                    </div>
+                    <button class="access-btn" onclick="checkPassword()">
+                        <span class="btn-text">Activate Access</span>
+                        <div class="btn-glow"></div>
+                        <i class="fas fa-arrow-right btn-icon"></i>
+                    </button>
+                </div>
+
+                <!-- Messages -->
+                <div id="messageContainer" class="message-container">
+                    <div id="errorMsg" class="message error-msg" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span class="message-text"></span>
+                    </div>
+                    <div id="successMsg" class="message success-msg" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <span class="message-text"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div id="adminPanel" class="admin-panel" style="display:none;">
+                <div class="panel-header">
+                    <h3><i class="fas fa-crown"></i> Admin Control Panel</h3>
+                </div>
+                
+                <div class="admin-login">
+                    <div class="input-wrapper">
+                        <input type="password" id="adminPassword" placeholder="Admin Password">
+                        <div class="input-border"></div>
+                    </div>
+                    <button class="admin-btn" onclick="verifyAdmin()">
+                        <span>Login</span>
+                        <i class="fas fa-sign-in-alt"></i>
+                    </button>
+                </div>
+
+                <div id="adminControls" class="admin-controls" style="display:none;">
+                    <!-- Visitors Management -->
+                    <div class="control-section">
+                        <h4><i class="fas fa-users"></i> Visitor Management</h4>
+                        <div id="visitorsList" class="visitors-list"></div>
+                    </div>
+
+                    <!-- IP Security -->
+                    <div class="control-section">
+                        <h4><i class="fas fa-shield-alt"></i> Security System</h4>
+                        <div class="security-controls">
+                            <div class="input-wrapper">
+                                <input type="text" id="ipToBlock" placeholder="IP to Block">
+                                <button onclick="blockIP()" class="security-btn block-btn">
+                                    <i class="fas fa-ban"></i> Block
+                                </button>
+                            </div>
+                            <div class="input-wrapper">
+                                <input type="text" id="ipToUnblock" placeholder="IP to Unblock">
+                                <button onclick="unblockIP()" class="security-btn unblock-btn">
+                                    <i class="fas fa-check"></i> Unblock
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="control-section">
+                        <h4><i class="fas fa-chart-bar"></i> Quick Statistics</h4>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                                <div class="stat-info">
+                                    <span class="stat-number" id="totalVisitors">0</span>
+                                    <span class="stat-label">Total Visitors</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-calendar-day"></i></div>
+                                <div class="stat-info">
+                                    <span class="stat-number" id="todayVisitors">0</span>
+                                    <span class="stat-label">Today's Visitors</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i class="fas fa-key"></i></div>
+                                <div class="stat-info">
+                                    <span class="stat-number" id="successfulAccess">0</span>
+                                    <span class="stat-label">Successful Access</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
+    </div>
 
-      <!-- Title Section -->
-      <div class="title-section">
-        <h1 class="main-title">
-          WELCOME TO RICO WORLD
-          <span class="typing-dots">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </span>
-        </h1>
-        <p class="subtitle">Enter access code to continue</p>
-      </div>
-
-      <!-- Access Form -->
-      <div class="access-form">
-        <div class="input-container">
-          <div class="input-wrapper">
-            <input type="password" id="passwordInput" placeholder="Enter Access Code" autocomplete="off">
-            <div class="input-border"></div>
-            <div class="input-glow"></div>
-          </div>
-          <button class="access-btn" onclick="checkPassword()">
-            <span class="btn-text">Activate Access</span>
+    <!-- Social Buttons -->
+    <div class="social-buttons">
+        <!-- Discord Button -->
+        <div class="social-btn discord-btn" onclick="openDiscord()" title="Join Discord">
+            <i class="fab fa-discord"></i>
             <div class="btn-glow"></div>
-            <i class="fas fa-arrow-right btn-icon"></i>
-          </button>
         </div>
 
-        <div id="messageContainer" class="message-container">
-          <div id="errorMsg" class="message error-msg" style="display: none;">
-            <i class="fas fa-exclamation-triangle"></i>
-            <span class="message-text"></span>
-          </div>
-          <div id="successMsg" class="message success-msg" style="display: none;">
-            <i class="fas fa-check-circle"></i>
-            <span class="message-text"></span>
-          </div>
+        <!-- Games Menu Button -->
+        <div class="social-btn games-btn" onclick="toggleGamesMenu()" title="Games List">
+            <i class="fas fa-gamepad"></i>
+            <span class="new-badge">!</span>
+            <div class="btn-glow"></div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Social Buttons -->
-  <div class="social-buttons">
-    <div class="social-btn discord-btn" onclick="openDiscord()" title="Join Discord">
-      <i class="fab fa-discord"></i>
-      <div class="btn-glow"></div>
     </div>
 
-    <div class="social-btn games-btn" onclick="toggleGamesMenu()" title="Games List">
-      <i class="fas fa-gamepad"></i>
-      <span class="new-badge">!</span>
-      <div class="btn-glow"></div>
+    <!-- Games Menu -->
+    <div class="games-menu" id="gamesMenu">
+        <div class="menu-header">
+            <h3><i class="fas fa-gamepad"></i> Games List</h3>
+            <button class="close-menu" onclick="toggleGamesMenu()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="menu-content">
+            <div class="game-option" onclick="openGameIdPage("English version")">
+                <i class="fas fa-globe"></i>
+                <span>English Version</span>
+            </div>
+            <div class="game-option" onclick="openGameIdPage("Vietnam version")">
+                <i class="fas fa-flag"></i>
+                <span>Vietnam Version</span>
+            </div>
+            <div class="game-option" onclick="openGameIdPage("China version")">
+                <i class="fas fa-dragon"></i>
+                <span>China Version</span>
+            </div>
+            <div class="game-option" onclick="openGameIdPage("Turkish version")">
+                <i class="fas fa-moon"></i>
+                <span>Turkish Version</span>
+            </div>
+            <div class="game-option" onclick="openGameIdPage("New version")">
+                <i class="fas fa-star"></i>
+                <span>New Version</span>
+            </div>
+            <div class="game-option" onclick="openGameIdPage("Demon version")">
+                <i class="fas fa-fire"></i>
+                <span>Demon Version</span>
+            </div>
+            <div class="game-option" onclick="openGameIdPage("Dragon version")">
+                <i class="fas fa-dragon"></i>
+                <span>Dragon Version</span>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- Notification System -->
-  <div id="notificationContainer" class="notification-container"></div>
+    <!-- Game ID Page -->
+    <div class="game-id-page" id="gameIdPage">
+        <div class="game-id-container">
+            <div class="game-id-header">
+                <h2 id="selectedGameTitle">Game Title</h2>
+                <button class="close-game-page" onclick="closeGameIdPage()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="game-id-form">
+                <div class="input-wrapper">
+                    <input type="password" id="gameIdInput" placeholder="Enter Access Code">
+                    <div class="input-border"></div>
+                </div>
+                <button class="game-access-btn" onclick="checkGamePassword()">
+                    <span>Activate Access</span>
+                    <i class="fas fa-play"></i>
+                </button>
+                <div id="gameErrorMsg" class="message error-msg" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Wrong code! Try again.</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <!-- Scripts -->
-  <script src="config/firebase-config.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/firebase.js"></script>
-  <script src="js/admin.js"></script>
-  <script src="js/main.js"></script>
+    <!-- Content Frame -->
+    <iframe id="contentFrame" title="Protected Content" allowfullscreen></iframe>
 
-  <!-- Back button -->
-  <a href="index.html" style="
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    width: 36px;
-    height: 36px;
-    border: 2px solid white;
-    color: white;
-    border-radius: 50%;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    background-color: transparent;
-    z-index: 9999;
-  " title="الرجوع">
-    <i class="fas fa-arrow-left"></i>
-  </a>
+    <!-- Notification System -->
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <!-- JavaScript Files -->
+    <script src="config/firebase-config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/main.js"></script>
+
+<a href="index.html" style="
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  width: 36px;
+  height: 36px;
+  border: 2px solid white;
+  color: white;
+  border-radius: 50%;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background-color: transparent;
+  z-index: 9999;
+" title="الرجوع">
+  <i class="fas fa-arrow-left"></i>
+</a>
+
+
+
 </body>
 </html>
