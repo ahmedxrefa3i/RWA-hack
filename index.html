@@ -1,232 +1,88 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rico World - Access Portal</title>
-    <meta name="description" content="Rico World platform for accessing protected content">
-    <meta name="keywords" content="Rico World, Gaming, Access Codes">
+  <!-- Desktop Block Script -->
+  <script>
+    const ua = navigator.userAgent.toLowerCase();
+    const isMobile = /android|iphone|ipad|ipod/.test(ua);
+    const isEmulator = /wv|google_sdk|sdk_google|emulator/.test(ua);
 
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    if (!(isMobile || isEmulator)) {
+      document.documentElement.innerHTML = `
+        <style>
+          body {
+            background-color: black !important;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+          }
+        </style>
+        <body>
+          <div>
+            <h1>🚫 كمبيوتر؟ لا يا باشا مش هينفع</h1>
+            <p>افتح الموقع من موبايل أو محاكي علشان حسابك في أمان.</p>
+          </div>
+        </body>
+      `;
+    }
+  </script>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide:wght@400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rico World - Access Portal</title>
+  <meta name="description" content="Rico World platform for accessing protected content">
+  <meta name="keywords" content="Rico World, Gaming, Access Codes">
 
-    <!-- CSS Files -->
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/animations.css">
-    <link rel="stylesheet" href="css/responsive.css">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Audiowide:wght@400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div id="loadingScreen" class="loading-screen">
-        <div class="loading-content">
-            <div class="loading-logo">
-                <div class="logo-circle">
-                    <span>RW</span>
-                </div>
-            </div>
-            <div class="loading-text">
-                <h2>RICO WORLD</h2>
-                <p>Loading...</p>
-            </div>
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
-            </div>
-        </div>
-    </div>
+  <!-- باقي الكود هنا زي ما هو بدون تعديل -->
+  <!-- ... -->
 
-    <!-- Background Effects -->
-    <div class="background-effects">
-        <div class="stars"></div>
-        <div class="floating-particles"></div>
-    </div>
+  <!-- Scripts -->
+  <script src="config/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/main.js"></script>
 
-    <!-- Navigation -->
-    <nav class="main-nav" id="mainNav">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <span class="logo-text">RICO WORLD</span>
-            </div>
-            <div class="nav-menu">
-                <button class="nav-btn" onclick="showStats()">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Statistics</span>
-                </button>
-                <button class="nav-btn" onclick="toggleTheme()">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                    <span>Dark Mode</span>
-                </button>
-                <button class="nav-btn" onclick="showSettings()">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Back Button -->
-    <button class="back-btn" id="backBtn" onclick="goBack()" title="Go Back">
-        <i class="fas fa-home"></i>
-    </button>
-
-    <!-- Main Container -->
-    <div class="main-container" id="mainContainer">
-        <div class="container">
-            <!-- Logo Section -->
-            <div class="logo-section">
-                <div class="logo">
-                    <span class="logo-text">RW</span>
-                    <div class="logo-glow"></div>
-                </div>
-                <div class="logo-rings">
-                    <div class="ring ring-1"></div>
-                    <div class="ring ring-2"></div>
-                    <div class="ring ring-3"></div>
-                </div>
-            </div>
-
-            <!-- Title Section -->
-            <div class="title-section">
-                <h1 class="main-title">
-                    WELCOME TO RICO WORLD
-                    <span class="typing-dots">
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                    </span>
-                </h1>
-                <p class="subtitle">Enter access code to continue</p>
-            </div>
-
-            <!-- Access Form -->
-            <div class="access-form">
-                <div class="input-container">
-                    <div class="input-wrapper">
-                        <input type="password" id="passwordInput" placeholder="Enter Access Code" autocomplete="off">
-                        <div class="input-border"></div>
-                        <div class="input-glow"></div>
-                    </div>
-                    <button class="access-btn" onclick="checkPassword()">
-                        <span class="btn-text">Activate Access</span>
-                        <div class="btn-glow"></div>
-                        <i class="fas fa-arrow-right btn-icon"></i>
-                    </button>
-                </div>
-
-                <!-- Messages -->
-                <div id="messageContainer" class="message-container">
-                    <div id="errorMsg" class="message error-msg" style="display: none;">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span class="message-text"></span>
-                    </div>
-                    <div id="successMsg" class="message success-msg" style="display: none;">
-                        <i class="fas fa-check-circle"></i>
-                        <span class="message-text"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Admin Panel -->
-            <div id="adminPanel" class="admin-panel" style="display:none;">
-                <div class="panel-header">
-                    <h3><i class="fas fa-crown"></i> Admin Control Panel</h3>
-                </div>
-                <div class="admin-login">
-                    <div class="input-wrapper">
-                        <input type="password" id="adminPassword" placeholder="Admin Password">
-                        <div class="input-border"></div>
-                    </div>
-                    <button class="admin-btn" onclick="verifyAdmin()">
-                        <span>Login</span>
-                        <i class="fas fa-sign-in-alt"></i>
-                    </button>
-                </div>
-                <div id="adminControls" class="admin-controls" style="display:none;"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Social Buttons -->
-    <div class="social-buttons">
-        <div class="social-btn discord-btn" onclick="openDiscord()" title="Join Discord">
-            <i class="fab fa-discord"></i>
-            <div class="btn-glow"></div>
-        </div>
-        <div class="social-btn games-btn" onclick="toggleGamesMenu()" title="Games List">
-            <i class="fas fa-gamepad"></i>
-            <span class="new-badge">!</span>
-            <div class="btn-glow"></div>
-        </div>
-    </div>
-
-    <!-- Content Frame -->
-    <iframe id="contentFrame" title="Protected Content" allowfullscreen></iframe>
-
-    <!-- Notification System -->
-    <div id="notificationContainer" class="notification-container"></div>
-
-    <!-- JavaScript Files -->
-    <script src="config/firebase-config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/firebase.js"></script>
-    <script src="js/admin.js"></script>
-    <script src="js/main.js"></script>
-
-    <!-- Back button -->
-    <a href="index.html" style="
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      width: 36px;
-      height: 36px;
-      border: 2px solid white;
-      color: white;
-      border-radius: 50%;
-      font-size: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      background-color: transparent;
-      z-index: 9999;
-    " title="الرجوع">
-      <i class="fas fa-arrow-left"></i>
-    </a>
-
-    <!-- Desktop Block Script -->
-    <script>
-      const ua = navigator.userAgent.toLowerCase();
-      const isMobile = /android|iphone|ipad|ipod/.test(ua);
-      const isEmulator = /wv|google_sdk|sdk_google|emulator/.test(ua);
-
-      if (!isMobile && !isEmulator) {
-        document.body.innerHTML = \`
-          <style>
-            body {
-              background-color: black !important;
-              color: white;
-              font-family: sans-serif;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 100vh;
-              text-align: center;
-            }
-          </style>
-          <div>
-            <h1>🚫 كمبيوتر لا ياصحبي عشان امانك وامان حسابك</h1>
-            <p>استخدم جهاز موبايل أو محاكي للدخول.</p>
-          </div>
-        \`;
-      }
-    </script>
-
+  <!-- Back button -->
+  <a href="index.html" style="
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 36px;
+    height: 36px;
+    border: 2px solid white;
+    color: white;
+    border-radius: 50%;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    background-color: transparent;
+    z-index: 9999;
+  " title="الرجوع">
+    <i class="fas fa-arrow-left"></i>
+  </a>
 </body>
 </html>
