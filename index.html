@@ -7,6 +7,163 @@
     <meta name="description" content="Rico World platform for accessing protected content">
     <meta name="keywords" content="Rico World, Gaming, Access Codes">
     
+    <!-- Device Detection and Access Control - Must run first -->
+    <script>
+        (function() {
+            // Device Detection Function
+            function detectDevice() {
+                const userAgent = navigator.userAgent.toLowerCase();
+                const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+                const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(userAgent);
+                const isEmulator = /emulator|simulator|android.*sdk|genymotion|bluestacks|nox|memu|ldplayer|phoenix os/i.test(userAgent);
+                
+                // Additional checks for emulators and mobile devices
+                const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                const screenWidth = window.screen.width;
+                const screenHeight = window.screen.height;
+                const devicePixelRatio = window.devicePixelRatio || 1;
+                
+                // Check for common emulator characteristics
+                const isLikelyEmulator = (
+                    isEmulator ||
+                    (hasTouch && screenWidth >= 1024 && screenHeight >= 768) || // Large touch screens (likely emulators)
+                    userAgent.includes('android') && !userAgent.includes('mobile') ||
+                    (userAgent.includes('android') && devicePixelRatio === 1) // Many emulators have pixel ratio of 1
+                );
+                
+                // Allow mobile devices, tablets, and emulators
+                return isMobile || isTablet || isLikelyEmulator || hasTouch;
+            }
+            
+            // Access Control Function
+            function blockDesktopAccess() {
+                const isAllowedDevice = detectDevice();
+                
+                if (!isAllowedDevice) {
+                    // Immediately hide the body content
+                    document.documentElement.style.display = 'none';
+                    
+                    // Create and show blocking screen
+                    const blockingScreen = document.createElement('div');
+                    blockingScreen.innerHTML = `
+                        <style>
+                            * { margin: 0; padding: 0; box-sizing: border-box; }
+                            .access-blocked-screen {
+                                position: fixed !important;
+                                top: 0 !important;
+                                left: 0 !important;
+                                width: 100vw !important;
+                                height: 100vh !important;
+                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+                                display: flex !important;
+                                flex-direction: column !important;
+                                justify-content: center !important;
+                                align-items: center !important;
+                                font-family: 'Orbitron', 'Arial', monospace !important;
+                                color: white !important;
+                                text-align: center !important;
+                                z-index: 999999 !important;
+                                overflow: hidden !important;
+                            }
+                            .blocked-content {
+                                background: rgba(255, 255, 255, 0.1) !important;
+                                backdrop-filter: blur(10px) !important;
+                                border-radius: 20px !important;
+                                padding: 40px !important;
+                                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+                                max-width: 500px !important;
+                                margin: 20px !important;
+                                animation: fadeIn 1s ease-in-out !important;
+                            }
+                            .blocked-icon {
+                                font-size: 4rem !important;
+                                margin-bottom: 20px !important;
+                                color: #ff6b6b !important;
+                                animation: pulse 2s infinite !important;
+                            }
+                            .blocked-title {
+                                font-size: 2rem !important;
+                                margin-bottom: 20px !important;
+                                font-weight: 700 !important;
+                                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5) !important;
+                            }
+                            .blocked-text {
+                                font-size: 1.2rem !important;
+                                line-height: 1.6 !important;
+                                margin-bottom: 30px !important;
+                                opacity: 0.9 !important;
+                            }
+                            .device-options {
+                                display: flex !important;
+                                justify-content: center !important;
+                                gap: 20px !important;
+                                flex-wrap: wrap !important;
+                            }
+                            .device-option {
+                                background: rgba(255, 255, 255, 0.1) !important;
+                                padding: 15px !important;
+                                border-radius: 10px !important;
+                                border: 1px solid rgba(255, 255, 255, 0.2) !important;
+                                min-width: 100px !important;
+                            }
+                            .device-option i {
+                                font-size: 1.5rem !important;
+                                margin-bottom: 10px !important;
+                                display: block !important;
+                            }
+                            @keyframes fadeIn {
+                                from { opacity: 0; transform: translateY(30px); }
+                                to { opacity: 1; transform: translateY(0); }
+                            }
+                            @keyframes pulse {
+                                0%, 100% { transform: scale(1); }
+                                50% { transform: scale(1.1); }
+                            }
+                        </style>
+                        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+                        <div class="access-blocked-screen">
+                            <div class="blocked-content">
+                                <div class="blocked-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <h1 class="blocked-title">Access Restricted</h1>
+                                <p class="blocked-text">
+                                    This website is only accessible from mobile devices or emulators.
+                                    <br><br>
+                                    Please use your smartphone, tablet, or mobile emulator to access this content.
+                                </p>
+                                <div class="device-options">
+                                    <div class="device-option">
+                                        <i class="fas fa-mobile-alt"></i>
+                                        <span>Mobile Phone</span>
+                                    </div>
+                                    <div class="device-option">
+                                        <i class="fas fa-tablet-alt"></i>
+                                        <span>Tablet</span>
+                                    </div>
+                                    <div class="device-option">
+                                        <i class="fas fa-desktop"></i>
+                                        <span>Mobile Emulator</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Replace entire document with blocking screen
+                    document.documentElement.innerHTML = blockingScreen.innerHTML;
+                    
+                    // Prevent any further script execution
+                    throw new Error('Desktop access blocked');
+                }
+            }
+            
+            // Run device check immediately
+            blockDesktopAccess();
+        })();
+    </script>
+    
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
@@ -24,6 +181,26 @@
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
 </head>
 <body>
+    <!-- Additional Security Script -->
+    <script>
+        // Prevent bypassing by disabling developer tools on desktop
+        document.addEventListener('keydown', function(e) {
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (e.keyCode === 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
+                (e.ctrlKey && e.keyCode === 85)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+    </script>
+
     <!-- Loading Screen -->
     <div id="loadingScreen" class="loading-screen">
         <div class="loading-content">
@@ -233,31 +410,31 @@
             </button>
         </div>
         <div class="menu-content">
-            <div class="game-option" onclick="openGameIdPage("English version")">
+            <div class="game-option" onclick="openGameIdPage('English version')">
                 <i class="fas fa-globe"></i>
                 <span>English Version</span>
             </div>
-            <div class="game-option" onclick="openGameIdPage("Vietnam version")">
+            <div class="game-option" onclick="openGameIdPage('Vietnam version')">
                 <i class="fas fa-flag"></i>
                 <span>Vietnam Version</span>
             </div>
-            <div class="game-option" onclick="openGameIdPage("China version")">
+            <div class="game-option" onclick="openGameIdPage('China version')">
                 <i class="fas fa-dragon"></i>
                 <span>China Version</span>
             </div>
-            <div class="game-option" onclick="openGameIdPage("Turkish version")">
+            <div class="game-option" onclick="openGameIdPage('Turkish version')">
                 <i class="fas fa-moon"></i>
                 <span>Turkish Version</span>
             </div>
-            <div class="game-option" onclick="openGameIdPage("New version")">
+            <div class="game-option" onclick="openGameIdPage('New version')">
                 <i class="fas fa-star"></i>
                 <span>New Version</span>
             </div>
-            <div class="game-option" onclick="openGameIdPage("Demon version")">
+            <div class="game-option" onclick="openGameIdPage('Demon version')">
                 <i class="fas fa-fire"></i>
                 <span>Demon Version</span>
             </div>
-            <div class="game-option" onclick="openGameIdPage("Dragon version")">
+            <div class="game-option" onclick="openGameIdPage('Dragon version')">
                 <i class="fas fa-dragon"></i>
                 <span>Dragon Version</span>
             </div>
@@ -323,7 +500,6 @@
   <i class="fas fa-arrow-left"></i>
 </a>
 
-
-
 </body>
 </html>
+
