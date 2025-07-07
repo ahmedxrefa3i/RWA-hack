@@ -4,7 +4,7 @@
 class SecureAPI {
     constructor() {
         // Replace this with your deployed Render URL
-        this.baseURL = 'https://your-app-name.onrender.com/api';
+        this.baseURL = 'https://rico-secure-backend.onrender.com/api';
         // For local testing, use: this.baseURL = 'http://localhost:3000/api';
     }
 
