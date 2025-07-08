@@ -1,22 +1,18 @@
-// Updated Main.js - Secure Version
-// This version uses the secure backend API instead of direct Firebase access
+// Secure Version of Main.js - using backend API only
 secureAPI.setBaseURL('https://rico-secure-backend.onrender.com');
 
-// Global variables
-let currentGameVersion = '';
+// Global state
 let encryptedAccessLink = '';
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', function () {
+// Initialize app
+document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Rico World - Secure Version Loaded');
     testAPIConnection();
     initializeEventListeners();
-    setTimeout(() => {
-        hideLoadingScreen();
-    }, 2000);
+    setTimeout(hideLoadingScreen, 2000);
 });
 
-// Test API connection on startup
+// Check API connectivity
 async function testAPIConnection() {
     try {
         const health = await secureAPI.healthCheck();
@@ -28,28 +24,17 @@ async function testAPIConnection() {
     }
 }
 
-// Initialize event listeners
+// Setup keypress on Enter
 function initializeEventListeners() {
     const passwordInput = document.getElementById('passwordInput');
     if (passwordInput) {
-        passwordInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
-        });
-    }
-
-    const gameIdInput = document.getElementById('gameIdInput');
-    if (gameIdInput) {
-        gameIdInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkGamePassword();
-            }
+        passwordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkPassword();
         });
     }
 }
 
-// Hide loading screen
+// Hide loader
 function hideLoadingScreen() {
     const loadingScreen = document.getElementById('loadingScreen');
     if (loadingScreen) {
@@ -60,18 +45,15 @@ function hideLoadingScreen() {
     }
 }
 
-// Check main password
+// Handle password
 async function checkPassword() {
     const passwordInput = document.getElementById('passwordInput');
     const password = passwordInput.value.trim();
-
-    if (!password) {
-        showError('Please enter an access code');
-        return;
-    }
-
     const button = document.querySelector('.access-btn');
     const originalText = button.innerHTML;
+
+    if (!password) return showError('Please enter an access code');
+
     button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
     button.disabled = true;
 
@@ -84,6 +66,13 @@ async function checkPassword() {
             setTimeout(() => {
                 const iframe = document.getElementById('contentFrame');
                 iframe.src = encryptedAccessLink;
+                iframe.style.display = 'block';
+
+                // ✅ إخفاء الفورم
+                const form = document.querySelector('.access-form');
+                if (form) form.style.display = 'none';
+
+                // ✅ إزالة أي توكن من الرابط
                 history.replaceState({}, document.title, window.location.pathname);
             }, 1000);
         } else {
@@ -99,85 +88,29 @@ async function checkPassword() {
     }
 }
 
-// Check game password
-async function checkGamePassword() {
-    const gameIdInput = document.getElementById('gameIdInput');
-    const password = gameIdInput.value.trim();
-
-    if (!password) {
-        showGameError('Please enter an access code');
-        return;
-    }
-
-    const button = document.querySelector('.game-access-btn');
-    const originalText = button.innerHTML;
-    button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
-    button.disabled = true;
-
-    try {
-        const result = await secureAPI.verifyPassword(password, currentGameVersion);
-
-        if (result.success && result.link) {
-            encryptedAccessLink = result.link;
-            showNotification(`Access granted for ${currentGameVersion}!`, 'success');
-            setTimeout(() => {
-                window.open(result.link, '_blank');
-                closeGameIdPage();
-            }, 1500);
-        } else {
-            showGameError(result.error || 'Invalid access code');
-        }
-    } catch (error) {
-        console.error('Game password verification error:', error);
-        showGameError('Connection error. Please try again.');
-    } finally {
-        button.innerHTML = originalText;
-        button.disabled = false;
-        gameIdInput.value = '';
-    }
-}
-
+// Show error
 function showError(message) {
-    const errorMsg = document.getElementById('errorMsg');
-    const errorText = errorMsg.querySelector('.message-text');
-    if (errorText) errorText.textContent = message;
-    if (errorMsg) {
-        errorMsg.style.display = 'flex';
-        setTimeout(() => {
-            errorMsg.style.display = 'none';
-        }, 5000);
+    const box = document.getElementById('errorMsg');
+    const text = box?.querySelector('.message-text');
+    if (text) text.textContent = message;
+    if (box) {
+        box.style.display = 'flex';
+        setTimeout(() => box.style.display = 'none', 5000);
     }
 }
 
+// Show success
 function showSuccess(message) {
-    const successMsg = document.getElementById('successMsg');
-    const successText = successMsg.querySelector('.message-text');
-    if (successText) successText.textContent = message;
-    if (successMsg) {
-        successMsg.style.display = 'flex';
-        setTimeout(() => {
-            successMsg.style.display = 'none';
-        }, 5000);
+    const box = document.getElementById('successMsg');
+    const text = box?.querySelector('.message-text');
+    if (text) text.textContent = message;
+    if (box) {
+        box.style.display = 'flex';
+        setTimeout(() => box.style.display = 'none', 5000);
     }
 }
 
-function showGameError(message) {
-    const gameErrorMsg = document.getElementById('gameErrorMsg');
-    const errorText = gameErrorMsg.querySelector('span');
-    if (errorText) errorText.textContent = message;
-    if (gameErrorMsg) {
-        gameErrorMsg.style.display = 'flex';
-        setTimeout(() => {
-            gameErrorMsg.style.display = 'none';
-        }, 5000);
-    }
-}
-
-function hideGameError() {
-    const gameErrorMsg = document.getElementById('gameErrorMsg');
-    if (gameErrorMsg) gameErrorMsg.style.display = 'none';
-}
-
+// Show floating notification
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
@@ -189,25 +122,12 @@ function showNotification(message, type = 'info') {
     const container = document.getElementById('notificationContainer') || document.body;
     container.appendChild(notification);
 
-    setTimeout(() => {
-        notification.classList.add('show');
-    }, 10);
-
+    setTimeout(() => notification.classList.add('show'), 10);
     setTimeout(() => {
         notification.classList.remove('show');
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.parentNode.removeChild(notification);
-            }
-        }, 300);
+        setTimeout(() => notification.remove(), 300);
     }, 4000);
 }
 
-function goBack() {
-    window.history.back();
-}
-
+// Public access
 window.checkPassword = checkPassword;
-window.checkGamePassword = checkGamePassword;
-window.closeGameIdPage = closeGameIdPage;
-window.goBack = goBack;
