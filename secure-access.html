@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Secure Access - Rico World</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .message {
+      font-size: 1.2rem;
+      text-align: center;
+    }
+    a {
+      color: #4fc3f7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="message" id="status">Verifying your access link...</div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const statusEl = document.getElementById("status");
+
+    if (!token) {
+      statusEl.textContent = "❌ Invalid or missing access token.";
+    } else {
+      // Send request to backend to verify token
+      fetch("https://rico-secure-backend.onrender.com/verify-link", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ encryptedLink: token })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.valid && data.realLink) {
+          statusEl.innerHTML = `✅ Access verified!<br><a href="${data.realLink}" target="_blank">Click here to open</a>`;
+        } else {
+          statusEl.textContent = "❌ Invalid or expired access link.";
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        statusEl.textContent = "❌ Error verifying the link.";
+      });
+    }
+  </script>
+
+</body>
+</html>
