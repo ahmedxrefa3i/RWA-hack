@@ -6,283 +6,84 @@
     <title>Rico World - Access Portal</title>
     <meta name="description" content="Rico World platform for accessing protected content">
     <meta name="keywords" content="Rico World, Gaming, Access Codes">
-    
+
     <!-- Cache Busting Meta Tags -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    
-    <!-- Device Detection and Access Control -->
+
+    <!-- حماية ضد سطح المكتب -->
     <script>
         (function() {
-            // Enhanced Device Detection Function
             function detectDevice() {
                 const userAgent = navigator.userAgent.toLowerCase();
                 const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
                 const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(userAgent);
                 const isEmulator = /emulator|simulator|android.*sdk|genymotion|bluestacks|nox|memu|ldplayer|phoenix os/i.test(userAgent);
-                
-                // Additional checks for emulators and mobile devices
                 const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
                 const screenWidth = window.screen.width;
                 const screenHeight = window.screen.height;
                 const devicePixelRatio = window.devicePixelRatio || 1;
-                
-                // Check for common emulator characteristics
                 const isLikelyEmulator = (
                     isEmulator ||
-                    (hasTouch && screenWidth >= 1024 && screenHeight >= 768) || // Large touch screens (likely emulators)
+                    (hasTouch && screenWidth >= 1024 && screenHeight >= 768) ||
                     userAgent.includes('android') && !userAgent.includes('mobile') ||
-                    (userAgent.includes('android') && devicePixelRatio === 1) // Many emulators have pixel ratio of 1
+                    (userAgent.includes('android') && devicePixelRatio === 1)
                 );
-                
-                // Allow mobile devices, tablets, and emulators
                 return isMobile || isTablet || isLikelyEmulator || hasTouch;
             }
-            
-            // Enhanced Access Control Function
+
             function blockDesktopAccess() {
                 const isAllowedDevice = detectDevice();
-                
                 if (!isAllowedDevice) {
-                    // Immediately hide the body content
                     document.documentElement.style.display = 'none';
-                    
-                    // Create and show enhanced Arabic blocking screen
-                    const blockingScreen = document.createElement('div');
-                    blockingScreen.innerHTML = `
-                        <style>
-                            @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
-                            * { margin: 0; padding: 0; box-sizing: border-box; }
-                            .access-blocked-screen {
-                                position: fixed !important;
-                                top: 0 !important;
-                                left: 0 !important;
-                                width: 100vw !important;
-                                height: 100vh !important;
-                                background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
-                                display: flex !important;
-                                flex-direction: column !important;
-                                justify-content: center !important;
-                                align-items: center !important;
-                                font-family: 'Cairo', 'Arial', sans-serif !important;
-                                color: white !important;
-                                text-align: center !important;
-                                z-index: 999999 !important;
-                                overflow: hidden !important;
-                                direction: rtl !important;
-                            }
-                            .blocked-content {
-                                background: rgba(255, 255, 255, 0.15) !important;
-                                backdrop-filter: blur(15px) !important;
-                                border-radius: 25px !important;
-                                padding: 50px 40px !important;
-                                border: 2px solid rgba(255, 255, 255, 0.3) !important;
-                                box-shadow: 0 15px 50px rgba(0, 0, 0, 0.4) !important;
-                                max-width: 600px !important;
-                                margin: 20px !important;
-                                animation: slideInUp 1s ease-out !important;
-                                position: relative !important;
-                            }
-                            .blocked-content::before {
-                                content: '' !important;
-                                position: absolute !important;
-                                top: -2px !important;
-                                left: -2px !important;
-                                right: -2px !important;
-                                bottom: -2px !important;
-                                background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57) !important;
-                                border-radius: 25px !important;
-                                z-index: -1 !important;
-                                animation: borderGlow 3s linear infinite !important;
-                                background-size: 400% 400% !important;
-                            }
-                            .blocked-icon {
-                                font-size: 5rem !important;
-                                margin-bottom: 25px !important;
-                                color: #ff6b6b !important;
-                                animation: bounce 2s infinite !important;
-                                text-shadow: 0 0 20px rgba(255, 107, 107, 0.5) !important;
-                            }
-                            .main-message {
-                                font-size: 2.5rem !important;
-                                margin-bottom: 20px !important;
-                                font-weight: 800 !important;
-                                text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7) !important;
-                                line-height: 1.2 !important;
-                                background: linear-gradient(45deg, #fff, #f0f0f0) !important;
-                                -webkit-background-clip: text !important;
-                                -webkit-text-fill-color: transparent !important;
-                                background-clip: text !important;
-                            }
-                            .sub-message {
-                                font-size: 1.4rem !important;
-                                opacity: 0.9 !important;
-                                font-weight: 600 !important;
-                                margin-bottom: 30px !important;
-                                text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5) !important;
-                            }
-                            .device-options {
-                                display: flex !important;
-                                justify-content: center !important;
-                                gap: 25px !important;
-                                flex-wrap: wrap !important;
-                                margin-top: 30px !important;
-                            }
-                            .device-option {
-                                background: rgba(255, 255, 255, 0.2) !important;
-                                padding: 20px !important;
-                                border-radius: 15px !important;
-                                border: 1px solid rgba(255, 255, 255, 0.3) !important;
-                                min-width: 120px !important;
-                                transition: all 0.3s ease !important;
-                                cursor: pointer !important;
-                            }
-                            .device-option:hover {
-                                background: rgba(255, 255, 255, 0.3) !important;
-                                transform: translateY(-5px) !important;
-                                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
-                            }
-                            .device-option i {
-                                font-size: 2rem !important;
-                                margin-bottom: 10px !important;
-                                display: block !important;
-                                color: #4ecdc4 !important;
-                            }
-                            .device-option span {
-                                font-size: 1rem !important;
-                                font-weight: 600 !important;
-                            }
-                            .floating-particles {
-                                position: absolute !important;
-                                width: 100% !important;
-                                height: 100% !important;
-                                overflow: hidden !important;
-                                z-index: -1 !important;
-                            }
-                            .particle {
-                                position: absolute !important;
-                                background: rgba(255, 255, 255, 0.1) !important;
-                                border-radius: 50% !important;
-                                animation: float 6s ease-in-out infinite !important;
-                            }
-                            @keyframes slideInUp {
-                                from { 
-                                    opacity: 0; 
-                                    transform: translateY(50px) scale(0.9); 
-                                }
-                                to { 
-                                    opacity: 1; 
-                                    transform: translateY(0) scale(1); 
-                                }
-                            }
-                            @keyframes bounce {
-                                0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-                                40% { transform: translateY(-20px); }
-                                60% { transform: translateY(-10px); }
-                            }
-                            @keyframes borderGlow {
-                                0% { background-position: 0% 50%; }
-                                50% { background-position: 100% 50%; }
-                                100% { background-position: 0% 50%; }
-                            }
-                            @keyframes float {
-                                0%, 100% { transform: translateY(0px) rotate(0deg); }
-                                33% { transform: translateY(-30px) rotate(120deg); }
-                                66% { transform: translateY(30px) rotate(240deg); }
-                            }
-                            .warning-badge {
-                                position: absolute !important;
-                                top: -15px !important;
-                                right: -15px !important;
-                                background: #ff6b6b !important;
-                                color: white !important;
-                                padding: 8px 15px !important;
-                                border-radius: 20px !important;
-                                font-size: 0.9rem !important;
-                                font-weight: 700 !important;
-                                animation: pulse 2s infinite !important;
-                                box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4) !important;
-                            }
-                            @keyframes pulse {
-                                0%, 100% { transform: scale(1); }
-                                50% { transform: scale(1.1); }
-                            }
-                        </style>
-                        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-                        <div class="access-blocked-screen">
-                            <div class="floating-particles">
-                                <div class="particle" style="width: 20px; height: 20px; left: 10%; animation-delay: 0s;"></div>
-                                <div class="particle" style="width: 15px; height: 15px; left: 20%; animation-delay: 1s;"></div>
-                                <div class="particle" style="width: 25px; height: 25px; left: 30%; animation-delay: 2s;"></div>
-                                <div class="particle" style="width: 18px; height: 18px; left: 40%; animation-delay: 3s;"></div>
-                                <div class="particle" style="width: 22px; height: 22px; left: 50%; animation-delay: 4s;"></div>
-                                <div class="particle" style="width: 16px; height: 16px; left: 60%; animation-delay: 5s;"></div>
-                                <div class="particle" style="width: 24px; height: 24px; left: 70%; animation-delay: 1.5s;"></div>
-                                <div class="particle" style="width: 19px; height: 19px; left: 80%; animation-delay: 2.5s;"></div>
-                                <div class="particle" style="width: 21px; height: 21px; left: 90%; animation-delay: 3.5s;"></div>
-                            </div>
-                            <div class="blocked-content">
-                                <div class="warning-badge">ممنوع!</div>
-                                <div class="blocked-icon">
-                                    <i class="fas fa-desktop"></i>
-                                </div>
-                                <h1 class="main-message">كمبيوتر ؟ لا ياصحبي ممنوع عشان يكون حسابك في أمان</h1>
-                                <p class="sub-message">استخدم موبايل أو محاكي هيشتغل معاك</p>
-                                <div class="device-options">
-                                    <div class="device-option">
-                                        <i class="fas fa-mobile-alt"></i>
-                                        <span>موبايل</span>
-                                    </div>
-                                    <div class="device-option">
-                                        <i class="fas fa-tablet-alt"></i>
-                                        <span>تابلت</span>
-                                    </div>
-                                    <div class="device-option">
-                                        <i class="fas fa-gamepad"></i>
-                                        <span>محاكي</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // Replace entire document with blocking screen
-                    document.documentElement.innerHTML = blockingScreen.innerHTML;
-                    
-                    // Prevent any further script execution
+                    document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">\u0647\u0630\u0627 \u0627\u0644\u0645\u0648\u0642\u0639 \u0645\u062a\u0627\u062d \u0644\u0644\u062c\u0648\u0627\u0644 \u0641\u0642\u0637</div>';
                     return false;
                 }
             }
-            
-            // Run device check immediately
             blockDesktopAccess();
         })();
     </script>
-    
-   <!-- Secure Backend Integration -->
-<script src="js/secure-api.js"></script>
-<script src="js/main-secure.js"></script>
 
-    
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Audiowide:wght@400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- شاشة سوداء عند انقطاع الإنترنت -->
+    <script>
+        function showOfflineScreen() {
+            const offlineOverlay = document.createElement('div');
+            offlineOverlay.id = 'offlineOverlay';
+            offlineOverlay.style.position = 'fixed';
+            offlineOverlay.style.top = '0';
+            offlineOverlay.style.left = '0';
+            offlineOverlay.style.width = '100vw';
+            offlineOverlay.style.height = '100vh';
+            offlineOverlay.style.backgroundColor = 'black';
+            offlineOverlay.style.color = 'white';
+            offlineOverlay.style.display = 'flex';
+            offlineOverlay.style.alignItems = 'center';
+            offlineOverlay.style.justifyContent = 'center';
+            offlineOverlay.style.fontSize = '1.8rem';
+            offlineOverlay.style.zIndex = '999999';
+            offlineOverlay.innerText = '🚫 تم فقد الاتصال بالإنترنت';
+            document.body.appendChild(offlineOverlay);
+        }
+        window.addEventListener('offline', showOfflineScreen);
+    </script>
+
+    <!-- Secure Backend Integration -->
+    <script src="js/secure-api.js"></script>
+    <script src="js/main-secure.js"></script>
+
+    <!-- Fonts and Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    
-    <!-- CSS Files -->
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/responsive.css">
-    
-    <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
 </head>
 <body>
-    <!-- Additional Security Script -->
+    <!-- حمايات إضافية -->
     <script>
-        // Enhanced security measures
         document.addEventListener('keydown', function(e) {
-            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+Shift+C
             if (e.keyCode === 123 || 
                 (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) ||
                 (e.ctrlKey && e.keyCode === 85)) {
@@ -290,37 +91,27 @@
                 return false;
             }
         });
-        
-        // Disable right-click context menu
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             return false;
         });
-        
-        // Additional cache clearing for users with cached versions
         if ('caches' in window) {
             caches.keys().then(function(names) {
                 for (let name of names) caches.delete(name);
             });
         }
-        
-        // Clear service workers
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                }
+                for(let registration of registrations) registration.unregister();
             });
         }
     </script>
 
-    <!-- Loading Screen -->
+    <!-- Loader -->
     <div id="loadingScreen" class="loading-screen">
         <div class="loading-content">
             <div class="loading-logo">
-                <div class="logo-circle">
-                    <span>RW</span>
-                </div>
+                <div class="logo-circle"><span>RW</span></div>
             </div>
             <div class="loading-text">
                 <h2>RICO WORLD</h2>
@@ -332,70 +123,13 @@
         </div>
     </div>
 
-    <!-- Background Effects -->
-    <div class="background-effects">
-        <div class="stars"></div>
-        <div class="floating-particles"></div>
-    </div>
-
-    <!-- Navigation -->
-    <nav class="main-nav" id="mainNav">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <span class="logo-text">RICO WORLD</span>
-            </div>
-            <div class="nav-menu">
-                <button class="nav-btn" onclick="showStats()">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Statistics</span>
-                </button>
-                <button class="nav-btn" onclick="toggleTheme()">
-                    <i class="fas fa-moon" id="themeIcon"></i>
-                    <span>Dark Mode</span>
-                </button>
-                <button class="nav-btn" onclick="showSettings()">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Back Button -->
-    <button class="back-btn" id="backBtn" onclick="goBack()" title="Go Back">
-        <i class="fas fa-home"></i>
-    </button>
-
-    <!-- Main Container -->
+    <!-- محتوى الصفحة -->
     <div class="main-container" id="mainContainer">
         <div class="container">
-            <!-- Logo Section -->
-            <div class="logo-section">
-                <div class="logo">
-                    <span class="logo-text">RW</span>
-                    <div class="logo-glow"></div>
-                </div>
-                <div class="logo-rings">
-                    <div class="ring ring-1"></div>
-                    <div class="ring ring-2"></div>
-                    <div class="ring ring-3"></div>
-                </div>
-            </div>
-
-            <!-- Title Section -->
             <div class="title-section">
-                <h1 class="main-title">
-                    WELCOME TO RICO WORLD
-                    <span class="typing-dots">
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                    </span>
-                </h1>
+                <h1 class="main-title">WELCOME TO RICO WORLD</h1>
                 <p class="subtitle">Enter access code to continue</p>
             </div>
-
-            <!-- Access Form -->
             <div class="access-form">
                 <div class="input-container">
                     <div class="input-wrapper">
@@ -409,8 +143,6 @@
                         <i class="fas fa-arrow-right btn-icon"></i>
                     </button>
                 </div>
-
-                <!-- Messages -->
                 <div id="messageContainer" class="message-container">
                     <div id="errorMsg" class="message error-msg" style="display: none;">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -422,35 +154,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-   
-    <!-- Content Frame -->
-    <iframe id="contentFrame" title="Protected Content" allowfullscreen></iframe>
-
-    <!-- Notification System -->
+    <!-- عرض المحتوى -->
+    <iframe id="contentFrame" title="Protected Content" allowfullscreen style="width: 100vw; height: 100vh; border: none; position: fixed; top: 0; left: 0; z-index: 9999; display: none;"></iframe>
     <div id="notificationContainer" class="notification-container"></div>
-
-
-<a href="index.html" style="
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  width: 36px;
-  height: 36px;
-  border: 2px solid white;
-  color: white;
-  border-radius: 50%;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  background-color: transparent;
-  z-index: 9999;
-" title="الرجوع">
-  <i class="fas fa-arrow-left"></i>
-</a>
-
 </body>
 </html>
-
