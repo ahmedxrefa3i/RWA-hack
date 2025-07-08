@@ -60,19 +60,18 @@ async function checkPassword() {
     try {
         const result = await secureAPI.verifyPassword(password, 'main');
 
-        if (result.success && result.link) {
-            encryptedAccessLink = result.link;
+        // ✅ التعديل هنا: نستخدم result.url بدل result.link
+        if (result.success && result.url) {
+            encryptedAccessLink = result.url;
             showSuccess('Access granted!');
             setTimeout(() => {
                 const iframe = document.getElementById('contentFrame');
                 iframe.src = encryptedAccessLink;
                 iframe.style.display = 'block';
 
-                // ✅ إخفاء الفورم
                 const form = document.querySelector('.access-form');
                 if (form) form.style.display = 'none';
 
-                // ✅ إزالة أي توكن من الرابط
                 history.replaceState({}, document.title, window.location.pathname);
             }, 1000);
         } else {
