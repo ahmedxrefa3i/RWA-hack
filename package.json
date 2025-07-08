@@ -1,14 +1,13 @@
 {
   "name": "secure-backend",
   "version": "1.0.0",
+  "description": "Secure API server for Rico World frontend",
   "main": "secure-api.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node secure-api.js"
   },
-  "keywords": [],
-  "author": "",
+  "author": "ahmedxrefa3i",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
