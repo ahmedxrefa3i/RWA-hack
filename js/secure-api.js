@@ -36,7 +36,7 @@ class SecureAPI {
                 throw new Error(data.error || `HTTP error! status: ${response.status}`);
             }
 
-            console.log(`✅ API request successful:`, data);
+            console.log(`✅ API request successful`);
             return data;
 
         } catch (error) {
