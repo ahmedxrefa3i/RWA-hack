@@ -3,200 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rico World - Demon Slayer Edition</title>
-    <meta name="description" content="Rico World Access Portal - Demon Slayer Theme">
+    <title>Rico World - Access Portal</title>
+    <meta name="description" content="Rico World platform for accessing protected content">
+    <meta name="keywords" content="Rico World, Gaming, Access Codes">
 
-    <!-- FONTS -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Zen+Kurenaido&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Cache Busting Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
-    <!-- CSS RESET + BASE STYLES -->
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+    <!-- حماية ضد سطح المكتب -->
+    <script>
+        (function() {
+            function detectDevice() {
+                const userAgent = navigator.userAgent.toLowerCase();
+                const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
+                const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(userAgent);
+                const isEmulator = /emulator|simulator|android.*sdk|genymotion|bluestacks|nox|memu|ldplayer|phoenix os/i.test(userAgent);
+                const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+                const screenWidth = window.screen.width;
+                const screenHeight = window.screen.height;
+                const devicePixelRatio = window.devicePixelRatio || 1;
+                const isLikelyEmulator = (
+                    isEmulator ||
+                    (hasTouch && screenWidth >= 1024 && screenHeight >= 768) ||
+                    userAgent.includes('android') && !userAgent.includes('mobile') ||
+                    (userAgent.includes('android') && devicePixelRatio === 1)
+                );
+                return isMobile || isTablet || isLikelyEmulator || hasTouch;
+            }
+
+            function blockDesktopAccess() {
+                const isAllowedDevice = detectDevice();
+                if (!isAllowedDevice) {
+                    document.documentElement.style.display = 'none';
+                    document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">\u0647\u0630\u0627 \u0627\u0644\u0645\u0648\u0642\u0639 \u0645\u062a\u0627\u062d \u0644\u0644\u062c\u0648\u0627\u0644 \u0641\u0642\u0637</div>';
+                    return false;
+                }
+            }
+            blockDesktopAccess();
+        })();
+    </script>
+
+    <!-- شاشة سوداء عند انقطاع الإنترنت -->
+    <script>
+        function showOfflineScreen() {
+            const offlineOverlay = document.createElement('div');
+            offlineOverlay.id = 'offlineOverlay';
+            offlineOverlay.style.position = 'fixed';
+            offlineOverlay.style.top = '0';
+            offlineOverlay.style.left = '0';
+            offlineOverlay.style.width = '100vw';
+            offlineOverlay.style.height = '100vh';
+            offlineOverlay.style.backgroundColor = 'black';
+            offlineOverlay.style.color = 'white';
+            offlineOverlay.style.display = 'flex';
+            offlineOverlay.style.alignItems = 'center';
+            offlineOverlay.style.justifyContent = 'center';
+            offlineOverlay.style.fontSize = '1.8rem';
+            offlineOverlay.style.zIndex = '999999';
+            offlineOverlay.innerText = '🚫 تم فقد الاتصال بالإنترنت';
+            document.body.appendChild(offlineOverlay);
         }
+        window.addEventListener('offline', showOfflineScreen);
+    </script>
 
-        body {
-            font-family: 'Cairo', sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: white;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        .main-container {
-            text-align: center;
-            padding: 40px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .main-title {
-            font-size: 2.2rem;
-            margin-bottom: 15px;
-            color: #00f7ff;
-            font-family: 'Zen Kurenaido', sans-serif;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 25px;
-            opacity: 0.85;
-        }
-
-        input[type="password"] {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            outline: none;
-            width: 80%;
-            font-size: 1rem;
-            margin-bottom: 15px;
-        }
-
-        .access-btn {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            padding: 10px 25px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.3s ease;
-        }
-
-        .access-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px #ff4b2b;
-        }
-
-        #contentFrame {
-            display: none;
-            border: none;
-            width: 100vw;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 999;
-        }
-
-        #errorMsg, #successMsg {
-            display: none;
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 10px;
-        }
-
-        #errorMsg {
-            background-color: rgba(255, 0, 0, 0.3);
-        }
-
-        #successMsg {
-            background-color: rgba(0, 255, 0, 0.3);
-        }
-
-        .logo-rw {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 2rem;
-            font-family: 'Orbitron', sans-serif;
-            color: #00f7ff;
-            text-shadow: 0 0 10px #00f7ff;
-        }
-
-        .reload-btn {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 36px;
-            height: 36px;
-            border: 2px solid white;
-            color: white;
-            border-radius: 50%;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            background-color: transparent;
-            z-index: 9999;
-        }
-
-        .offline-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: black;
-            color: white;
-            font-size: 2rem;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999999;
-            display: none;
-        }
-    </style>
-
-    <!-- API & LOGIC -->
+    <!-- Secure Backend Integration -->
     <script src="js/secure-api.js"></script>
     <script src="js/main-secure.js"></script>
+
+    <!-- Fonts and Styles -->
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
 </head>
 <body>
-    <!-- Reload Button -->
-    <a class="reload-btn" href="javascript:location.reload()" title="إعادة تحميل">
-        <i class="fas fa-arrow-left"></i>
-    </a>
-
-    <!-- RW Logo -->
-    <div class="logo-rw">RW</div>
-
-    <!-- Main UI -->
-    <div class="main-container access-form">
-        <h1 class="main-title">Welcom To rico World </h1>
-        <p class="subtitle">enter yr code </p>
-
-        <input type="password" id="passwordInput" placeholder="رمز الدخول...">
-        <br>
-        <button class="access-btn" onclick="checkPassword()">ابدأ الدخول</button>
-
-        <div id="errorMsg"><span class="message-text"></span></div>
-        <div id="successMsg"><span class="message-text"></span></div>
-    </div>
-
-    <!-- Protected Content -->
-    <iframe id="contentFrame"></iframe>
-
-    <!-- Offline Cover -->
-    <div class="offline-overlay" id="offlineOverlay">
-        🚫 لا يوجد اتصال بالإنترنت
-    </div>
-
-    <!-- Offline Detection Script -->
+    <!-- حمايات إضافية -->
     <script>
-        function handleConnectionChange() {
-            const overlay = document.getElementById('offlineOverlay');
-            if (!navigator.onLine) {
-                overlay.style.display = 'flex';
-            } else {
-                overlay.style.display = 'none';
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) ||
+                (e.ctrlKey && e.keyCode === 85)) {
+                e.preventDefault();
+                return false;
             }
+        });
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) caches.delete(name);
+            });
         }
-        window.addEventListener('load', handleConnectionChange);
-        window.addEventListener('online', handleConnectionChange);
-        window.addEventListener('offline', handleConnectionChange);
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) registration.unregister();
+            });
+        }
     </script>
+
+    <!-- Loader -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-logo">
+                <div class="logo-circle"><span>RW</span></div>
+            </div>
+            <div class="loading-text">
+                <h2>RICO WORLD</h2>
+                <p>Loading...</p>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- محتوى الصفحة -->
+    <div class="main-container" id="mainContainer">
+        <div class="container">
+            <div class="title-section">
+                <h1 class="main-title">WELCOME TO RICO WORLD</h1>
+                <p class="subtitle">Enter access code to continue</p>
+            </div>
+            <div class="access-form">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <input type="password" id="passwordInput" placeholder="Enter Access Code" autocomplete="off">
+                        <div class="input-border"></div>
+                        <div class="input-glow"></div>
+                    </div>
+                    <button class="access-btn" onclick="checkPassword()">
+                        <span class="btn-text">Activate Access</span>
+                        <div class="btn-glow"></div>
+                        <i class="fas fa-arrow-right btn-icon"></i>
+                    </button>
+                </div>
+                <div id="messageContainer" class="message-container">
+                    <div id="errorMsg" class="message error-msg" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span class="message-text"></span>
+                    </div>
+                    <div id="successMsg" class="message success-msg" style="display: none;">
+                        <i class="fas fa-check-circle"></i>
+                        <span class="message-text"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- عرض المحتوى -->
+    <iframe id="contentFrame" title="Protected Content" allowfullscreen style="width: 100vw; height: 100vh; border: none; position: fixed; top: 0; left: 0; z-index: 9999; display: none;"></iframe>
+    <div id="notificationContainer" class="notification-container"></div>
 </body>
 </html>
