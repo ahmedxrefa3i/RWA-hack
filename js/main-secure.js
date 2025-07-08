@@ -1,6 +1,6 @@
 // Updated Main.js - Secure Version
 // This version uses the secure backend API instead of direct Firebase access
-
+secureAPI.setBaseURL('https://rico-secure-backend.onrender.com');
 // Global variables
 let currentGameVersion = '';
 let encryptedAccessLink = '';
