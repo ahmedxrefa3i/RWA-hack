@@ -66,8 +66,11 @@ async function checkPassword() {
             showSuccess('Access granted!');
             setTimeout(() => {
                 const iframe = document.getElementById('contentFrame');
-                iframe.src = encryptedAccessLink;
-                iframe.style.display = 'block';
+                        iframe.src = encryptedAccessLink;
+                       iframe.style.display = 'block';
+
+                 const warningBtn = document.querySelector("button[onclick*='alertBox']");
+                  if (warningBtn) warningBtn.style.display = 'none';
 
                 const form = document.querySelector('.access-form');
                 if (form) form.style.display = 'none';
