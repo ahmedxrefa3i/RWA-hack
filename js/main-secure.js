@@ -1,12 +1,13 @@
 // Updated Main.js - Secure Version
 // This version uses the secure backend API instead of direct Firebase access
 secureAPI.setBaseURL('https://rico-secure-backend.onrender.com');
+
 // Global variables
 let currentGameVersion = '';
 let encryptedAccessLink = '';
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('🚀 Rico World - Secure Version Loaded');
     testAPIConnection();
     initializeEventListeners();
@@ -31,7 +32,7 @@ async function testAPIConnection() {
 function initializeEventListeners() {
     const passwordInput = document.getElementById('passwordInput');
     if (passwordInput) {
-        passwordInput.addEventListener('keypress', function(e) {
+        passwordInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 checkPassword();
             }
@@ -40,7 +41,7 @@ function initializeEventListeners() {
 
     const gameIdInput = document.getElementById('gameIdInput');
     if (gameIdInput) {
-        gameIdInput.addEventListener('keypress', function(e) {
+        gameIdInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 checkGamePassword();
             }
@@ -77,13 +78,14 @@ async function checkPassword() {
     try {
         const result = await secureAPI.verifyPassword(password, 'main');
 
-        if (result.success) {
-            encryptedAccessLink = result.encryptedLink;
-            showSuccess('Access granted! Welcome to Rico World');
+        if (result.success && result.link) {
+            encryptedAccessLink = result.link;
+            showSuccess('Access granted!');
             setTimeout(() => {
-                const accessLink = generateSecureAccessLink(encryptedAccessLink);
-                window.location.href = accessLink;
-            }, 1500);
+                const iframe = document.getElementById('contentFrame');
+                iframe.src = encryptedAccessLink;
+                history.replaceState({}, document.title, window.location.pathname);
+            }, 1000);
         } else {
             showError(result.error || 'Invalid access code');
         }
@@ -115,12 +117,11 @@ async function checkGamePassword() {
     try {
         const result = await secureAPI.verifyPassword(password, currentGameVersion);
 
-        if (result.success) {
-            encryptedAccessLink = result.encryptedLink;
+        if (result.success && result.link) {
+            encryptedAccessLink = result.link;
             showNotification(`Access granted for ${currentGameVersion}!`, 'success');
-            const accessLink = generateSecureAccessLink(result.encryptedLink);
             setTimeout(() => {
-                window.open(accessLink, '_blank');
+                window.open(result.link, '_blank');
                 closeGameIdPage();
             }, 1500);
         } else {
@@ -134,28 +135,6 @@ async function checkGamePassword() {
         button.disabled = false;
         gameIdInput.value = '';
     }
-}
-
-function generateSecureAccessLink(encryptedLink) {
-    const baseURL = window.location.origin;
-    return `${baseURL}/secure-access.html?token=${encodeURIComponent(encryptedLink)}`;
-}
-
-function closeGameIdPage() {
-    const gameIdPage = document.getElementById('gameIdPage');
-    if (gameIdPage) {
-        gameIdPage.style.opacity = '0';
-        setTimeout(() => {
-            gameIdPage.style.display = 'none';
-        }, 300);
-    }
-
-    const gameIdInput = document.getElementById('gameIdInput');
-    if (gameIdInput) {
-        gameIdInput.value = '';
-    }
-
-    hideGameError();
 }
 
 function showError(message) {
