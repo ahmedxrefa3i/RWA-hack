@@ -12,6 +12,80 @@
     <meta http-equiv="Expires" content="0">
 
     <script>
+        // Anti-DevTools Script
+        (function( ) {
+            const devtools = {
+                isOpen: false,
+                orientation: undefined
+            };
+
+            const threshold = 160;
+
+            const emitEvent = (isOpen, orientation) => {
+                window.dispatchEvent(new CustomEvent('devtoolschange', {
+                    detail: {
+                        isOpen,
+                        orientation
+                    }
+                }));
+            };
+
+            const main = ({
+                emitEvents = true
+            } = {}) => {
+                const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                const orientation = widthThreshold ? 'vertical' : 'horizontal';
+
+                if (!(heightThreshold && widthThreshold) &&
+                    ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) || widthThreshold || heightThreshold)) {
+                    if ((!devtools.isOpen || devtools.orientation !== orientation) && emitEvents) {
+                        emitEvent(true, orientation);
+                    }
+
+                    devtools.isOpen = true;
+                    devtools.orientation = orientation;
+                } else {
+                    if (devtools.isOpen && emitEvents) {
+                        emitEvent(false, undefined);
+                    }
+
+                    devtools.isOpen = false;
+                    devtools.orientation = undefined;
+                }
+            };
+
+            main({
+                emitEvents: false
+            });
+            setInterval(main, 500);
+
+            if (typeof module !== 'undefined' && module.exports) {
+                module.exports = devtools;
+            } else {
+                window.devtools = devtools;
+            }
+
+            // Redirect and block if DevTools are opened
+            window.addEventListener('devtoolschange', event => {
+                if (event.detail.isOpen) {
+                    // This makes the page unusable while DevTools is open
+                    document.body.innerHTML = ''; 
+                    window.location.href = 'about:blank';
+                }
+            });
+
+            // Also, a simple debugger check
+            setInterval(function() {
+                console.clear();
+                console.log('%cSTOP!', 'color: red; font-size: 50px; font-weight: bold;');
+                console.log('%cThis is a browser feature intended for developers. If someone told you to copy-paste something here, it is a scam and will give them access to your account.', 'font-size: 16px;');
+                debugger;
+            }, 1000);
+        })();
+    </script>
+
+    <script>
         (function() {
             function detectDevice() {
                 const userAgent = navigator.userAgent.toLowerCase();
@@ -44,7 +118,11 @@
     </script>
 
     <script>
+        // Function to show the offline screen
         function showOfflineScreen() {
+            if (document.getElementById('offlineOverlay')) {
+                return;
+            }
             const offlineOverlay = document.createElement('div');
             offlineOverlay.id = 'offlineOverlay';
             offlineOverlay.style.position = 'fixed';
@@ -59,9 +137,10 @@
             offlineOverlay.style.justifyContent = 'center';
             offlineOverlay.style.fontSize = '1.8rem';
             offlineOverlay.style.zIndex = '999999';
-            offlineOverlay.innerText = '🚫 Connection lost!';
+            offlineOverlay.innerText = '🚫 Connection lost! Please reload the page.';
             document.body.appendChild(offlineOverlay);
         }
+
         window.addEventListener('offline', showOfflineScreen);
     </script>
 
@@ -76,7 +155,7 @@
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
 
     <style>
-        /* إضافة أنماط نافذة تغيير كلمة المرور */
+        /* CSS styles remain the same */
         .change-password-link {
             display: block;
             text-align: center;
@@ -99,7 +178,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.9 );
             z-index: 10000;
             justify-content: center;
             align-items: center;
@@ -215,7 +294,6 @@
             border: 1px solid #ff4444;
         }
 
-        /* أنماط نافذة التنبيه المحدثة */
         .alert-modal {
             display: none;
             position: fixed;
@@ -319,10 +397,11 @@
 </head>
 <body>
     <script>
+        // Disable right-click and specific key combinations
         document.addEventListener('keydown', function(e) {
-            if (e.keyCode === 123 || 
-                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) ||
-                (e.ctrlKey && e.keyCode === 85)) {
+            if (e.keyCode === 123 || // F12
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || // Ctrl+Shift+I/J/C
+                (e.ctrlKey && e.keyCode === 85)) { // Ctrl+U
                 e.preventDefault();
                 return false;
             }
@@ -331,6 +410,8 @@
             e.preventDefault();
             return false;
         });
+
+        // Clear cache and service workers
         if ('caches' in window) {
             caches.keys().then(function(names) {
                 for (let name of names) caches.delete(name);
@@ -362,12 +443,10 @@
       <i class="fas fa-arrow-left"></i>
     </a>
 
-    <!-- زر التحذير المحدث -->
     <button onclick="showAlertModal()" style="position: fixed; bottom: 15px; left: 15px; background: crimson; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; display: flex; align-items: center; justify-content: center; z-index: 99999;">
         <i class="fas fa-exclamation"></i>
     </button>
 
-    <!-- نافذة التنبيه المحدثة -->
     <div id="alertModal" class="alert-modal">
         <div class="alert-content">
             <div class="alert-title">⚠️ تنبيه مهم</div>
@@ -389,7 +468,6 @@
         </div>
     </div>
 
-    <!-- نافذة تغيير كلمة المرور -->
     <div id="changePasswordModal" class="change-password-modal">
         <div class="change-password-content">
             <div class="change-password-title">Change Access Code</div>
@@ -421,7 +499,6 @@
                         <div class="btn-glow"></div>
                         <i class="fas fa-arrow-right btn-icon"></i>
                     </button>
-                    <!-- رابط تغيير كلمة المرور -->
                     <a href="#" class="change-password-link" onclick="showChangePasswordModal()">Change Access Code</a>
                 </div>
                 <div id="messageContainer" class="message-container">
@@ -442,7 +519,6 @@
     <div id="notificationContainer" class="notification-container"></div>
 
     <script>
-        // وظائف نافذة تغيير كلمة المرور
         function showChangePasswordModal() {
             document.getElementById('changePasswordModal').style.display = 'flex';
             document.getElementById('oldPasswordInput').value = '';
@@ -469,7 +545,6 @@
             const oldPassword = document.getElementById('oldPasswordInput').value.trim();
             const newPassword = document.getElementById('newPasswordInput').value.trim();
 
-            // التحقق من الحقول
             if (!oldPassword) {
                 showChangePasswordMessage('Please enter your old code');
                 return;
@@ -480,7 +555,6 @@
                 return;
             }
 
-            // التحقق من عدم وجود مسافات في الكود الجديد
             if (newPassword.includes(' ')) {
                 showChangePasswordMessage('New code cannot contain spaces');
                 return;
@@ -495,7 +569,7 @@
                     body: JSON.stringify({
                         oldPassword: oldPassword,
                         newPassword: newPassword
-                    })
+                    } )
                 });
 
                 const result = await response.json();
@@ -513,7 +587,6 @@
             }
         }
 
-        // وظائف نافذة التنبيه المحدثة
         function showAlertModal() {
             document.getElementById('alertModal').style.display = 'flex';
         }
@@ -532,7 +605,6 @@
             window.location.href = mailto;
         }
 
-        // إغلاق النوافذ عند النقر خارجها
         document.addEventListener('click', function(e) {
             if (e.target.id === 'changePasswordModal') {
                 hideChangePasswordModal();
@@ -542,7 +614,6 @@
             }
         });
 
-        // منع إغلاق النوافذ عند النقر داخل المحتوى
         document.addEventListener('click', function(e) {
             if (e.target.closest('.change-password-content') || e.target.closest('.alert-content')) {
                 e.stopPropagation();
@@ -551,4 +622,3 @@
     </script>
 </body>
 </html>
-
