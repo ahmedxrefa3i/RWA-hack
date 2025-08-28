@@ -13,7 +13,7 @@
 
     <script>
         // Anti-DevTools Script
-        (function( ) {
+        (function(  ) {
             const devtools = {
                 isOpen: false,
                 orientation: undefined
@@ -87,31 +87,21 @@
 
     <script>
         (function() {
-            function detectDevice() {
+            function detectDesktop() {
                 const userAgent = navigator.userAgent.toLowerCase();
-                const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
-                const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(userAgent);
-                const isEmulator = /emulator|simulator|android.*sdk|genymotion|bluestacks|nox|memu|ldplayer|phoenix os/i.test(userAgent);
-                const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-                const screenWidth = window.screen.width;
-                const screenHeight = window.screen.height;
-                const devicePixelRatio = window.devicePixelRatio || 1;
-                const isLikelyEmulator = (
-                    isEmulator ||
-                    (hasTouch && screenWidth >= 1024 && screenHeight >= 768) ||
-                    userAgent.includes('android') && !userAgent.includes('mobile') ||
-                    (userAgent.includes('android') && devicePixelRatio === 1)
-                );
-                return isMobile || isTablet || isLikelyEmulator || hasTouch;
+                const platform = navigator.platform.toLowerCase();
+                const isWindows = platform.indexOf('win') > -1;
+                const isLinux = platform.indexOf('linux') > -1 && !userAgent.includes('android');
+                return isWindows || isLinux;
             }
 
             function blockDesktopAccess() {
-                const isAllowedDevice = detectDevice();
-                if (!isAllowedDevice) {
+                if (detectDesktop()) {
                     document.documentElement.style.display = 'none';
-                    document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">This site is only accessible via mobile.</div>';
+                    document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">Access from Desktop (Windows/Linux) is not allowed.</div>';
                     return false;
                 }
+                return true;
             }
             blockDesktopAccess();
         })();
@@ -178,7 +168,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.9 );
+            background: rgba(0, 0, 0, 0.9  );
             z-index: 10000;
             justify-content: center;
             align-items: center;
@@ -569,7 +559,7 @@
                     body: JSON.stringify({
                         oldPassword: oldPassword,
                         newPassword: newPassword
-                    } )
+                    }  )
                 });
 
                 const result = await response.json();
