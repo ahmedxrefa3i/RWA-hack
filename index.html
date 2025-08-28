@@ -12,161 +12,108 @@
     <meta http-equiv="Expires" content="0">
 
     <script>
-        // Balanced Anti-DevTools Protection System
-        (function() {
-            'use strict';
-            
-            let devtoolsOpen = false;
-            let detectionCount = 0;
-            const maxDetections = 3;
-            
-            // Size-based detection with higher tolerance
-            function sizeDetection() {
-                const threshold = 250; // Higher threshold for more tolerance
+        // Anti-DevTools Script
+        (function( ) {
+            const devtools = {
+                isOpen: false,
+                orientation: undefined
+            };
+
+            const threshold = 160;
+
+            const emitEvent = (isOpen, orientation) => {
+                window.dispatchEvent(new CustomEvent('devtoolschange', {
+                    detail: {
+                        isOpen,
+                        orientation
+                    }
+                }));
+            };
+
+            const main = ({
+                emitEvents = true
+            } = {}) => {
                 const widthThreshold = window.outerWidth - window.innerWidth > threshold;
                 const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                
-                return widthThreshold || heightThreshold;
-            }
-            
-            // Console detection (less aggressive)
-            function consoleDetection() {
-                let devtools = false;
-                try {
-                    const element = new Image();
-                    Object.defineProperty(element, 'id', {
-                        get: function() {
-                            devtools = true;
-                            return 'devtools-detected';
-                        }
-                    });
-                    console.log(element);
-                    console.clear();
-                } catch(e) {
-                    // Ignore errors
-                }
-                return devtools;
-            }
-            
-            // Debugger trap with higher tolerance
-            function debuggerTrap() {
-                let start = performance.now();
-                debugger;
-                let end = performance.now();
-                return (end - start) > 300; // Higher threshold
-            }
-            
-            // Protection trigger
-            function triggerProtection() {
-                detectionCount++;
-                
-                if (detectionCount >= maxDetections) {
-                    document.body.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:red;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999;">🚫 DevTools Detected - Access Blocked</div>';
-                    
-                    setTimeout(() => {
-                        try {
-                            window.location.href = 'about:blank';
-                        } catch(e) {}
-                    }, 2000);
-                }
-            }
-            
-            // Main detection function
-            function detectDevTools() {
-                try {
-                    const detectionMethods = [
-                        sizeDetection,
-                        consoleDetection,
-                        debuggerTrap
-                    ];
-                    
-                    let detectedCount = 0;
-                    
-                    detectionMethods.forEach(method => {
-                        try {
-                            if (method()) {
-                                detectedCount++;
-                            }
-                        } catch(e) {
-                            // Ignore errors
-                        }
-                    });
-                    
-                    // Require at least 2 methods to detect DevTools
-                    if (detectedCount >= 2) {
-                        devtoolsOpen = true;
-                        triggerProtection();
+                const orientation = widthThreshold ? 'vertical' : 'horizontal';
+
+                if (!(heightThreshold && widthThreshold) &&
+                    ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) || widthThreshold || heightThreshold)) {
+                    if ((!devtools.isOpen || devtools.orientation !== orientation) && emitEvents) {
+                        emitEvent(true, orientation);
                     }
-                } catch(e) {
-                    // Ignore errors
+
+                    devtools.isOpen = true;
+                    devtools.orientation = orientation;
+                } else {
+                    if (devtools.isOpen && emitEvents) {
+                        emitEvent(false, undefined);
+                    }
+
+                    devtools.isOpen = false;
+                    devtools.orientation = undefined;
                 }
-            }
-            
-            // Less frequent monitoring for better performance
-            function startMonitoring() {
-                detectDevTools();
-                setTimeout(startMonitoring, 2000); // Less frequent
-            }
-            
-            // Start monitoring with delay
-            setTimeout(startMonitoring, 3000);
-            
-            // Event-based detection with delays
-            window.addEventListener('resize', function() {
-                setTimeout(detectDevTools, 1000);
+            };
+
+            main({
+                emitEvents: false
             });
-            
-            // Keyboard protection
-            document.addEventListener('keydown', function(e) {
-                if (e.keyCode === 123 || // F12
-                    (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || // Ctrl+Shift+I/J/C
-                    (e.ctrlKey && e.keyCode === 85)) { // Ctrl+U
-                    e.preventDefault();
-                    triggerProtection();
-                    return false;
+            setInterval(main, 500);
+
+            if (typeof module !== 'undefined' && module.exports) {
+                module.exports = devtools;
+            } else {
+                window.devtools = devtools;
+            }
+
+            // Redirect and block if DevTools are opened
+            window.addEventListener('devtoolschange', event => {
+                if (event.detail.isOpen) {
+                    // This makes the page unusable while DevTools is open
+                    document.body.innerHTML = ''; 
+                    window.location.href = 'about:blank';
                 }
             });
-            
-            // Context menu protection
-            document.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                return false;
-            });
-            
+
+            // Also, a simple debugger check
+            setInterval(function() {
+                console.clear();
+                console.log('%cSTOP!', 'color: red; font-size: 50px; font-weight: bold;');
+                console.log('%cThis is a browser feature intended for developers. If someone told you to copy-paste something here, it is a scam and will give them access to your account.', 'font-size: 16px;');
+                debugger;
+            }, 1000);
         })();
     </script>
 
     <script>
-        // Simplified device detection - more permissive
         (function() {
             function detectDevice() {
                 const userAgent = navigator.userAgent.toLowerCase();
                 const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
                 const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(userAgent);
+                const isEmulator = /emulator|simulator|android.*sdk|genymotion|bluestacks|nox|memu|ldplayer|phoenix os/i.test(userAgent);
                 const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
                 const screenWidth = window.screen.width;
-                
-                // Very permissive detection - allow most devices
-                return isMobile || isTablet || hasTouch || screenWidth <= 1366; // Increased threshold
+                const screenHeight = window.screen.height;
+                const devicePixelRatio = window.devicePixelRatio || 1;
+                const isLikelyEmulator = (
+                    isEmulator ||
+                    (hasTouch && screenWidth >= 1024 && screenHeight >= 768) ||
+                    userAgent.includes('android') && !userAgent.includes('mobile') ||
+                    (userAgent.includes('android') && devicePixelRatio === 1)
+                );
+                return isMobile || isTablet || isLikelyEmulator || hasTouch;
             }
 
             function blockDesktopAccess() {
                 const isAllowedDevice = detectDevice();
                 if (!isAllowedDevice) {
-                    // Only block very large screens (likely desktop monitors)
-                    if (window.screen.width > 1366 && window.screen.height > 768) {
-                        document.documentElement.style.display = 'none';
-                        document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">This site is only accessible via mobile.</div>';
-                        return false;
-                    }
+                    document.documentElement.style.display = 'none';
+                    document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">This site is only accessible via mobile.</div>';
+                    return false;
                 }
-                return true;
             }
-            
-            // Only block if really necessary
-            if (window.screen.width > 1920) {
-                blockDesktopAccess();
-            }
+            blockDesktopAccess();
         })();
     </script>
 
@@ -446,35 +393,22 @@
         .alert-close:hover {
             background: rgba(255, 255, 255, 0.1);
         }
-
-        /* Balanced protection styles */
-        body {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-        
-        /* Allow some text selection for better UX */
-        input, textarea {
-            -webkit-user-select: text;
-            -moz-user-select: text;
-            -ms-user-select: text;
-            user-select: text;
-        }
     </style>
 </head>
 <body>
     <script>
-        // Basic keyboard protection
+        // Disable right-click and specific key combinations
         document.addEventListener('keydown', function(e) {
-            // Block main DevTools shortcuts
             if (e.keyCode === 123 || // F12
-                (e.ctrlKey && e.shiftKey && e.keyCode === 73) || // Ctrl+Shift+I
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) || // Ctrl+Shift+I/J/C
                 (e.ctrlKey && e.keyCode === 85)) { // Ctrl+U
                 e.preventDefault();
                 return false;
             }
+        });
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
         });
 
         // Clear cache and service workers
@@ -537,33 +471,33 @@
     <div id="changePasswordModal" class="change-password-modal">
         <div class="change-password-content">
             <div class="change-password-title">Change Access Code</div>
-            <input type="password" id="oldPasswordInput" class="change-password-input" placeholder="Enter old code" autocomplete="off">
-            <input type="password" id="newPasswordInput" class="change-password-input" placeholder="Enter new code" autocomplete="off">
+            <input type="password" id="oldPasswordInput" class="change-password-input" placeholder="Enter Old Code" autocomplete="off">
+            <input type="password" id="newPasswordInput" class="change-password-input" placeholder="Enter New Code" autocomplete="off">
             <div class="change-password-buttons">
-                <button class="change-password-btn change-password-submit" onclick="submitPasswordChange()">Change</button>
+                <button class="change-password-btn change-password-submit" onclick="submitPasswordChange()">Submit</button>
                 <button class="change-password-btn change-password-cancel" onclick="hideChangePasswordModal()">Cancel</button>
             </div>
             <div id="changePasswordMessage" class="change-password-message"></div>
         </div>
     </div>
 
-    <div class="container">
-        <div class="access-portal">
-            <div class="portal-header">
-                <div class="logo">
-                    <div class="logo-circle">
-                        <span>RW</span>
-                    </div>
-                </div>
-                <h1 class="portal-title">RICO WORLD</h1>
-                <p class="portal-subtitle">Enter Access Code</p>
+    <div class="main-container" id="mainContainer">
+        <div class="container">
+            <div class="title-section">
+                <h1 class="main-title">WELCOME TO RICO WORLD</h1>
+                <p class="subtitle">Enter access code to continue</p>
             </div>
             <div class="access-form">
-                <div class="input-group">
-                    <input type="password" id="passwordInput" class="access-input" placeholder="Access Code" autocomplete="off" maxlength="50">
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <input type="password" id="passwordInput" placeholder="Enter Access Code" autocomplete="off">
+                        <div class="input-border"></div>
+                        <div class="input-glow"></div>
+                    </div>
                     <button class="access-btn" onclick="checkPassword()">
-                        <i class="fas fa-unlock"></i>
-                        Access
+                        <span class="btn-text">Activate Access</span>
+                        <div class="btn-glow"></div>
+                        <i class="fas fa-arrow-right btn-icon"></i>
                     </button>
                     <a href="#" class="change-password-link" onclick="showChangePasswordModal()">Change Access Code</a>
                 </div>
@@ -688,4 +622,3 @@
     </script>
 </body>
 </html>
-
