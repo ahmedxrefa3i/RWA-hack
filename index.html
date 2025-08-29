@@ -12,59 +12,19 @@
     <meta http-equiv="Expires" content="0">
 
     <script>
-        // --- ULTIMATE PROTECTION SCRIPT ---
+        // --- Main Protection Script ---
         (function( ) {
-            // Function to block access and stop all other scripts
+            // Function to block access
             function blockAccess(message) {
-                // Use requestAnimationFrame to ensure the block happens smoothly
-                requestAnimationFrame(() => {
-                    document.documentElement.innerHTML = `<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">${message}</div>`;
-                    // Throw an error to halt script execution
-                    throw new Error("Execution stopped: " + message);
-                });
+                document.documentElement.innerHTML = `<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">${message}</div>`;
+                throw new Error("Execution stopped: " + message);
             }
 
             const userAgent = navigator.userAgent.toLowerCase();
             const platform = navigator.platform.toLowerCase();
-
-            // --- 1. Aggressive Kiwi Browser Detection ---
-            // This is a "provocation" technique. We create an iframe and try to load an
-            // internal Chrome URL that only Kiwi browser on mobile might successfully handle
-            // or behave differently to. We then check the result asynchronously.
             const isAndroid = /android/i.test(userAgent);
-            if (isAndroid) {
-                try {
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    // Attempt to load a resource that behaves uniquely in extension-enabled mobile browsers
-                    iframe.src = 'chrome-extension://'; 
-                    document.body.appendChild(iframe);
 
-                    setTimeout(() => {
-                        try {
-                            // In a normal browser on Android, accessing the contentDocument of a
-                            // 'chrome-extension://' iframe will throw a security error immediately.
-                            // If it doesn't, or if the document exists, it's a strong sign of a browser
-                            // with special capabilities, like Kiwi.
-                            if (iframe.contentDocument) {
-                                // If we can access the document, it's a Kiwi-like browser.
-                                blockAccess('This browser is not supported.');
-                            }
-                        } catch (e) {
-                            // A security error is expected in normal browsers. We do nothing.
-                        } finally {
-                            // Clean up the iframe
-                            if (iframe.parentNode) {
-                                iframe.parentNode.removeChild(iframe);
-                            }
-                        }
-                    }, 100); // A short delay to let the iframe attempt to load
-                } catch (e) {
-                    // If even creating the iframe fails in a specific way, we ignore.
-                }
-            }
-
-            // --- 2. Block Desktop OS (Windows/Linux) ---
+            // --- Block Desktop OS (Windows/Linux) ---
             const isWindows = platform.includes('win');
             const isLinux = platform.includes('linux') && !isAndroid;
             if (isWindows || isLinux) {
@@ -72,44 +32,48 @@
             }
         })();
     </script>
-
+    
     <script>
-        // Anti-DevTools Script (remains as a secondary protection)
-        // This script will not run if the main protection script blocks access
+        // --- Aggressive Anti-DevTools Script ---
         (function() {
-            // ... (The rest of the anti-devtools script remains the same)
-            if (window.location.href === 'about:blank') return;
-            const devtools = { isOpen: false, orientation: undefined };
+            // This function will be called if DevTools is detected
+            function blockPage() {
+                // Redirect to a blank page, effectively wiping the content and stopping scripts.
+                window.location.replace('about:blank');
+            }
+
+            const devtools = {
+                isOpen: false,
+                orientation: undefined
+            };
+
             const threshold = 160;
-            const emitEvent = (isOpen, orientation) => { window.dispatchEvent(new CustomEvent('devtoolschange', { detail: { isOpen, orientation } })); };
-            const main = ({ emitEvents = true } = {}) => {
+
+            const main = () => {
                 const widthThreshold = window.outerWidth - window.innerWidth > threshold;
                 const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-                const orientation = widthThreshold ? 'vertical' : 'horizontal';
-                if (!(heightThreshold && widthThreshold) && ((window.Firebug && window.Firebug.chrome && window.Firebug.chrome.isInitialized) || widthThreshold || heightThreshold)) {
-                    if ((!devtools.isOpen || devtools.orientation !== orientation) && emitEvents) { emitEvent(true, orientation); }
-                    devtools.isOpen = true;
-                    devtools.orientation = orientation;
+
+                // Check if DevTools is open
+                if (widthThreshold || heightThreshold) {
+                    // If it's open, immediately block the page
+                    if (!devtools.isOpen) {
+                        devtools.isOpen = true;
+                        blockPage();
+                    }
                 } else {
-                    if (devtools.isOpen && emitEvents) { emitEvent(false, undefined); }
                     devtools.isOpen = false;
-                    devtools.orientation = undefined;
                 }
             };
-            main({ emitEvents: false });
+
+            // Run the check frequently
             setInterval(main, 500);
-            window.devtools = devtools;
-            window.addEventListener('devtoolschange', event => {
-                if (event.detail.isOpen) {
-                    document.body.innerHTML = ''; 
-                    window.location.href = 'about:blank';
-                }
-            });
+
+            // Also, use the debugger trick which is very effective
             setInterval(function() {
-                console.clear();
-                console.log('%cSTOP!', 'color: red; font-size: 50px; font-weight: bold;');
+                // This will cause performance issues in the DevTools console,
+                // and when combined with the check above, it's very robust.
                 debugger;
-            }, 1000);
+            }, 500);
         })();
     </script>
 
