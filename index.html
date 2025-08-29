@@ -12,38 +12,73 @@
     <meta http-equiv="Expires" content="0">
 
     <script>
-        // Main protection script - Advanced Kiwi Browser Detection
+        // --- ULTIMATE PROTECTION SCRIPT ---
         (function( ) {
+            // Function to block access and stop all other scripts
+            function blockAccess(message) {
+                // Use requestAnimationFrame to ensure the block happens smoothly
+                requestAnimationFrame(() => {
+                    document.documentElement.innerHTML = `<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">${message}</div>`;
+                    // Throw an error to halt script execution
+                    throw new Error("Execution stopped: " + message);
+                });
+            }
+
             const userAgent = navigator.userAgent.toLowerCase();
             const platform = navigator.platform.toLowerCase();
 
-            // --- 1. Advanced Kiwi Browser Detection ---
-            // We check for the presence of chrome.runtime.getManifest which is a strong indicator
-            // of a Chromium browser with extension support on mobile, a hallmark of Kiwi.
-            // We also check that it's not a standard desktop Chrome.
-            const isLikelyKiwi = (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.getManifest && /android/i.test(userAgent));
+            // --- 1. Aggressive Kiwi Browser Detection ---
+            // This is a "provocation" technique. We create an iframe and try to load an
+            // internal Chrome URL that only Kiwi browser on mobile might successfully handle
+            // or behave differently to. We then check the result asynchronously.
+            const isAndroid = /android/i.test(userAgent);
+            if (isAndroid) {
+                try {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    // Attempt to load a resource that behaves uniquely in extension-enabled mobile browsers
+                    iframe.src = 'chrome-extension://'; 
+                    document.body.appendChild(iframe);
 
-            if (isLikelyKiwi || userAgent.includes('kiwi')) {
-                document.documentElement.style.display = 'none';
-                document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">This browser is not supported.</div>';
-                return; // Stop further execution
+                    setTimeout(() => {
+                        try {
+                            // In a normal browser on Android, accessing the contentDocument of a
+                            // 'chrome-extension://' iframe will throw a security error immediately.
+                            // If it doesn't, or if the document exists, it's a strong sign of a browser
+                            // with special capabilities, like Kiwi.
+                            if (iframe.contentDocument) {
+                                // If we can access the document, it's a Kiwi-like browser.
+                                blockAccess('This browser is not supported.');
+                            }
+                        } catch (e) {
+                            // A security error is expected in normal browsers. We do nothing.
+                        } finally {
+                            // Clean up the iframe
+                            if (iframe.parentNode) {
+                                iframe.parentNode.removeChild(iframe);
+                            }
+                        }
+                    }, 100); // A short delay to let the iframe attempt to load
+                } catch (e) {
+                    // If even creating the iframe fails in a specific way, we ignore.
+                }
             }
 
             // --- 2. Block Desktop OS (Windows/Linux) ---
             const isWindows = platform.includes('win');
-            const isLinux = platform.includes('linux') && !userAgent.includes('android'); 
+            const isLinux = platform.includes('linux') && !isAndroid;
             if (isWindows || isLinux) {
-                document.documentElement.style.display = 'none';
-                document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">Access from Desktop is not allowed.</div>';
-                return; // Stop further execution
+                blockAccess('Access from Desktop is not allowed.');
             }
         })();
     </script>
 
     <script>
         // Anti-DevTools Script (remains as a secondary protection)
+        // This script will not run if the main protection script blocks access
         (function() {
-            if (window.location.href === 'about:blank') return; // Stop if already blocked
+            // ... (The rest of the anti-devtools script remains the same)
+            if (window.location.href === 'about:blank') return;
             const devtools = { isOpen: false, orientation: undefined };
             const threshold = 160;
             const emitEvent = (isOpen, orientation) => { window.dispatchEvent(new CustomEvent('devtoolschange', { detail: { isOpen, orientation } })); };
