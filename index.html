@@ -12,7 +12,41 @@
     <meta http-equiv="Expires" content="0">
 
     <script>
-        //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
+        // ===== Universal Protection Script =====
+        (function() {
+            function blockAccess(message) {
+                document.documentElement.innerHTML = `<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">${message}</div>`;
+                throw new Error("Execution stopped: " + message);
+            }
+
+            const ua = navigator.userAgent.toLowerCase();
+            const platform = navigator.platform.toLowerCase();
+            const isAndroid = /android/i.test(ua);
+            const isIOS = /(iphone|ipad|ipod)/i.test(ua);
+
+            // --- Block Desktop (Windows/Linux/Mac) ---
+            const isWindows = platform.includes("win");
+            const isLinux = platform.includes("linux") && !isAndroid;
+            const isMac = platform.includes("mac");
+            if (isWindows || isLinux || isMac) {
+                blockAccess("🚫 Access from Desktop is not allowed.");
+            }
+
+            // --- Block Kiwi & other suspicious browsers ---
+            if (ua.includes("kiwi") || ua.includes("vivaldi") || ua.includes("yaBrowser") || ua.includes("ucbrowser") || ua.includes("samsungbrowser beta")) {
+                blockAccess("🚫 This browser is not allowed.");
+            }
+
+            // --- Allow only official mobile browsers ---
+            const allowed = ["chrome", "crios", "firefox", "fxios", "safari", "edg", "opr"];
+            const isAllowed = allowed.some(keyword => ua.includes(keyword));
+            if (!(isAndroid || isIOS) || !isAllowed) {
+                blockAccess("🚫 Please use an official mobile browser.");
+            }
+        })();
+    </script>
+    
+     <script>        //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
 //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
 //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
 //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
