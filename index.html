@@ -11,8 +11,56 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
-    <script>
-        //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
+<script>
+(function () {
+    function blockAccess(message) {
+        document.documentElement.innerHTML =
+          `<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:red;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999">${message}</div>`;
+        throw new Error("Execution stopped: " + message);
+    }
+
+    const ua = navigator.userAgent.toLowerCase();
+
+    // ==============================
+    // 🎯 فخ 1: كشف Kiwi من UA (لو لسه ظاهر)
+    // ==============================
+    if (ua.includes("kiwi")) {
+        blockAccess("🚫 Kiwi Browser is not allowed!");
+    }
+
+    // ==============================
+    // 🎯 فخ 2: دعم Extensions (ميزة خاصة بـ Kiwi)
+    // ==============================
+    if (window.chrome && window.chrome.webstore) {
+        blockAccess("🚫 Kiwi detected (Extension API)!");
+    }
+
+    // ==============================
+    // 🎯 فخ 3: DevTools Trap (Kiwi يسمح بيها)
+    // ==============================
+    let trap = false;
+    const element = new Image();
+    Object.defineProperty(element, 'id', {
+        get: function () {
+            trap = true;
+            blockAccess("🚫 DevTools detected (Kiwi/Debug)!");
+        }
+    });
+    console.log(element); // لو في DevTools → هيتفعل الـ get
+
+    // ==============================
+    // 🎯 فخ 4: أبعاد الشاشة (Kiwi + DevTools = فرق كبير)
+    // ==============================
+    setInterval(() => {
+        if (window.outerWidth - window.innerWidth > 200 || window.outerHeight - window.innerHeight > 200) {
+            blockAccess("🚫 Suspicious browser dimensions (Kiwi?)");
+        }
+    }, 500);
+
+})();
+</script>
+    
+  <script>        //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
 //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
 //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
 //10101010101010101001010101010101010001111001010101010101010101010100101010101010010101010101010101010100101101010101101001
