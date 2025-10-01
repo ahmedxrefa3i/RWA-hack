@@ -113,7 +113,7 @@
     </script>
 
     <script>
-        // Function to show the offline screen
+        
         function showOfflineScreen() {
             if (document.getElementById('offlineOverlay')) {
                 return;
@@ -162,7 +162,7 @@
             background: #000; 
         }
 
-        /* Animated Stars Background */
+        
         .stars-bg, .stars-bg-2, .stars-bg-3 {
             position: absolute;
             top: 0;
@@ -172,10 +172,10 @@
             width: 100%;
             height: 100%;
             display: block;
-            background-repeat: repeat; /* FIX: Ensure the background tiles seamlessly */
+            background-repeat: repeat; 
         }
         
-        /* === FIX: MODIFIED KEYFRAME FOR SMOOTH, INFINITE LOOP === */
+        /
         @keyframes move-twink-back {
             from {
                 background-position: 0 0;
@@ -200,7 +200,7 @@
             animation: move-twink-back 100s linear infinite;
         }
         
-        /* Main Container Styling */
+        
         .container {
             background: rgba(10, 10, 20, 0.75); 
             backdrop-filter: blur(10px); 
@@ -363,22 +363,20 @@
         document.addEventListener('click', function(e) { if (e.target.id === 'changePasswordModal') { hideChangePasswordModal(); } if (e.target.id === 'alertModal') { hideAlertModal(); } });
         document.addEventListener('click', function(e) { if (e.target.closest('.change-password-content') || e.target.closest('.alert-content')) { e.stopPropagation(); } });
         
-        /* === FIX: SCRIPT TO HIDE DISCORD BUTTON ON LOGIN === */
-        // This script observes the content frame for changes.
-        // When the content frame becomes visible (on successful login), it hides the Discord button.
+
         const contentFrameObserver = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.attributeName === "style" && document.getElementById('contentFrame').style.display !== 'none') {
                     const discordBtn = document.getElementById('discordBtn');
                     if(discordBtn) {
                         discordBtn.style.opacity = '0';
-                        discordBtn.style.pointerEvents = 'none'; // Prevents clicking the invisible button
+                        discordBtn.style.pointerEvents = 'none'; 
                     }
                 }
             });
         });
 
-        // Start observing the content frame element for attribute changes.
+        
         window.addEventListener('load', () => {
              const contentFrame = document.getElementById('contentFrame');
              if(contentFrame) {
