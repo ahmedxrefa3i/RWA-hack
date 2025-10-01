@@ -150,7 +150,6 @@
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
 
     <style>
-        /* === NEW STYLES ADDED === */
         html {
             height: 100%;
         }
@@ -159,8 +158,8 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* To prevent scrollbars from the stars */
-            background: #000; /* Fallback background */
+            overflow: hidden; 
+            background: #000; 
         }
 
         /* Animated Stars Background */
@@ -173,15 +172,17 @@
             width: 100%;
             height: 100%;
             display: block;
-            background: transparent;
+            background-repeat: repeat; /* FIX: Ensure the background tiles seamlessly */
         }
-
-        @function multiple-box-shadow($n) {
-            $value: '#{random(2000)}px #{random(2000)}px #FFF';
-            @for $i from 2 through $n {
-                $value: '#{$value} , #{random(2000)}px #{random(2000)}px #FFF';
+        
+        /* === FIX: MODIFIED KEYFRAME FOR SMOOTH, INFINITE LOOP === */
+        @keyframes move-twink-back {
+            from {
+                background-position: 0 0;
             }
-            @return unquote($value);
+            to {
+                background-position: -10000px 5000px;
+            }
         }
 
         .stars-bg {
@@ -199,27 +200,16 @@
             animation: move-twink-back 100s linear infinite;
         }
         
-        @keyframes move-twink-back {
-            from {
-                transform: translate3d(0, 0, 0);
-            }
-            to {
-                transform: translate3d(-1000px, 0, 0);
-            }
-        }
-        
         /* Main Container Styling */
         .container {
-            background: rgba(10, 10, 20, 0.75); /* Dark, semi-transparent background */
-            backdrop-filter: blur(10px); /* Glassmorphism effect */
+            background: rgba(10, 10, 20, 0.75); 
+            backdrop-filter: blur(10px); 
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(0, 255, 255, 0.2);
             border-radius: 15px;
-            padding: 40px; /* Added padding for better spacing */
+            padding: 40px; 
             box-shadow: 0 0 40px rgba(0, 255, 255, 0.2), inset 0 0 15px rgba(0, 255, 255, 0.1);
         }
-
-        /* === END OF NEW STYLES === */
 
         .change-password-link { display: block; text-align: center; margin-top: 15px; color: cyan; text-decoration: none; font-size: 14px; transition: all 0.3s ease; }
         .change-password-link:hover { color: white; text-shadow: 0 0 10px cyan; }
@@ -274,11 +264,11 @@
         </div>
     </div>
 
-    <a href="#" onclick="location.reload();" style="position: fixed; top: 10px; left: 10px; width: 40px; height: 40px; border: 2px solid white; color: white; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; text-decoration: none; background-color: rgba(0,0,0,0.3); z-index: 99999;" title="Back">
+    <a href="#" id="backBtn" onclick="location.reload();" style="position: fixed; top: 10px; left: 10px; width: 40px; height: 40px; border: 2px solid white; color: white; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; text-decoration: none; background-color: rgba(0,0,0,0.3); z-index: 99999;" title="Back">
       <i class="fas fa-arrow-left"></i>
     </a>
 
-    <a href="https://discord.gg/h2HpvBZaAS" target="_blank" rel="noopener noreferrer" title="Join our Discord" style="position: fixed; bottom: 15px; left: 15px; background: #5865F2; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; display: flex; align-items: center; justify-content: center; z-index: 99999; text-decoration: none;">
+    <a href="https://discord.gg/h2HpvBZaAS" id="discordBtn" target="_blank" rel="noopener noreferrer" title="Join our Discord" style="position: fixed; bottom: 15px; left: 15px; background: #5865F2; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 20px; display: flex; align-items: center; justify-content: center; z-index: 99999; text-decoration: none; transition: opacity 0.3s ease;">
         <i class="fab fa-discord"></i>
     </a>
     
@@ -372,6 +362,30 @@
         function sendAlertMessage() { const message = document.getElementById("alertMessage").value; if (!message.trim()) { alert("يرجى كتابة الرسالة أولاً."); return; } const mailto = `mailto:rwa@riicco.space?subject=Code Update&body=${encodeURIComponent(message)}`; window.location.href = mailto; }
         document.addEventListener('click', function(e) { if (e.target.id === 'changePasswordModal') { hideChangePasswordModal(); } if (e.target.id === 'alertModal') { hideAlertModal(); } });
         document.addEventListener('click', function(e) { if (e.target.closest('.change-password-content') || e.target.closest('.alert-content')) { e.stopPropagation(); } });
+        
+        /* === FIX: SCRIPT TO HIDE DISCORD BUTTON ON LOGIN === */
+        // This script observes the content frame for changes.
+        // When the content frame becomes visible (on successful login), it hides the Discord button.
+        const contentFrameObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.attributeName === "style" && document.getElementById('contentFrame').style.display !== 'none') {
+                    const discordBtn = document.getElementById('discordBtn');
+                    if(discordBtn) {
+                        discordBtn.style.opacity = '0';
+                        discordBtn.style.pointerEvents = 'none'; // Prevents clicking the invisible button
+                    }
+                }
+            });
+        });
+
+        // Start observing the content frame element for attribute changes.
+        window.addEventListener('load', () => {
+             const contentFrame = document.getElementById('contentFrame');
+             if(contentFrame) {
+                contentFrameObserver.observe(contentFrame, { attributes: true });
+             }
+        });
+
     </script>
 </body>
 </html>
