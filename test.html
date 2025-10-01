@@ -90,7 +90,7 @@
         (function() {
             function detectDevice() {
                 const userAgent = navigator.userAgent.toLowerCase();
-                const platform = navigator.platform.toLowerCase(); 
+                const platform = navigator.platform.toLowerCase(); // Get platform info
                 
                 const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile/i.test(userAgent);
                 const isTablet = /ipad|android(?!.*mobile)|tablet/i.test(userAgent);
@@ -100,6 +100,8 @@
                 const screenHeight = window.screen.height;
                 const devicePixelRatio = window.devicePixelRatio || 1;
                 
+                // Enhanced check for common Desktop OS platforms
+                // This targets Windows, Linux (X11), and Mac OS X platforms
                 const isDesktopOS = /win|linux|mac os x|unix|x11/i.test(platform) || 
                                     (/windows|macintosh/i.test(userAgent) && !isMobile && !isTablet);
 
@@ -110,6 +112,8 @@
                     (userAgent.includes('android') && devicePixelRatio === 1)
                 );
                 
+                // Allow only if Mobile/Tablet AND not clearly a Desktop OS and not likely an emulator
+                // This makes it hard to use desktop browser features like mobile view
                 return (isMobile || isTablet) && !isDesktopOS && !isLikelyEmulator;
             }
 
@@ -117,6 +121,7 @@
                 const isAllowedDevice = detectDevice();
                 if (!isAllowedDevice) {
                     document.documentElement.style.display = 'none';
+                    // Custom message for blocked desktop access
                     document.documentElement.innerHTML = '<div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:black;color:white;display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:999999;text-align:center;">This site is strictly accessible via **Mobile Devices** only.<br>Desktop/Emulator access is prohibited.</div>';
                     return false;
                 }
@@ -188,11 +193,10 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            /* Layer 1: Slower, smaller stars */
+            /* Layer 1: Slower, smaller stars (using a small SVG circle for efficiency) */
             background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="none"/><circle cx="50%" cy="50%" r="0.5" fill="white"/></svg>') repeat 0 0;
             background-size: 2px 2px;
-            /* تم تعديل نهاية الحركة لضمان تكرارها وعدم الاختفاء */
-            animation: move-stars-slower 100s linear infinite; 
+            animation: move-stars-slower 100s linear infinite;
         }
         
         /* Layer 2: Faster, slightly larger/brighter stars */
@@ -205,30 +209,24 @@
             height: 100%;
             background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><rect width="100%" height="100%" fill="none"/><circle cx="50%" cy="50%" r="1" fill="rgba(255, 255, 255, 0.8)"/></svg>') repeat 0 0;
             background-size: 4px 4px;
-            /* تم تعديل نهاية الحركة لضمان تكرارها وعدم الاختفاء */
             animation: move-stars-faster 50s linear infinite;
         }
 
-        /* تم تعديل Animation Keyframes */
         @keyframes move-stars-slower {
             from {
-                /* بداية الحركة */
-                background-position: 0 0; 
+                background-position: 0 0;
             }
             to {
-                /* نهاية الحركة: يتم اختيار مضاعفات لـ background-size لضمان التكرار السلس */
-                background-position: 20000px 10000px;
+                background-position: -10000px 5000px;
             }
         }
         
         @keyframes move-stars-faster {
             from {
-                /* بداية الحركة */
                 background-position: 0 0;
             }
             to {
-                /* نهاية الحركة: يتم اختيار مضاعفات لـ background-size لضمان التكرار السلس */
-                background-position: -20000px -10000px;
+                background-position: 10000px -5000px;
             }
         }
         
@@ -370,16 +368,6 @@
             color: #ff4444;
             border: 1px solid #ff4444;
         }
-        
-        /* إضافة ستايل لزر الديسكورد الافتراضي (إذا كان موجوداً) */
-        /* هذا سيضمن اخفاءه عبر JavaScript لاحقاً */
-        .discord-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 999;
-            /* أي تنسيق آخر لزر الديسكورد */
-        }
     </style>
 </head>
 <body>
@@ -429,7 +417,7 @@
     <a href="#" onclick="location.reload();" style="position: fixed; top: 10px; left: 10px; width: 40px; height: 40px; border: 2px solid white; color: white; border-radius: 50%; font-size: 18px; display: flex; align-items: center; justify-content: center; text-decoration: none; background-color: transparent; z-index: 99999;" title="Back">
       <i class="fas fa-arrow-left"></i>
     </a>
-    
+
     <div id="changePasswordModal" class="change-password-modal">
         <div class="change-password-content">
             <div class="change-password-title">Change Access Code</div>
@@ -481,40 +469,6 @@
     <div id="notificationContainer" class="notification-container"></div>
 
     <script>
-        // دالة إخفاء زر الديسكورد (تم إضافتها لحل المشكلة)
-        function hideDiscordButton() {
-            // استهداف زر الديسكورد بالـ ID الافتراضي
-            const discordBtnById = document.getElementById('discordBtn');
-            if (discordBtnById) {
-                discordBtnById.style.display = 'none';
-            }
-            // استهداف زر الديسكورد بالـ Class الافتراضي
-            const discordBtnByClass = document.querySelector('.discord-button');
-            if (discordBtnByClass) {
-                discordBtnByClass.style.display = 'none';
-            }
-            // إذا كان الزر مضافاً عبر JavaScript آخر، يجب التأكد من استهدافه هنا بشكل صحيح.
-        }
-        
-        // ** ملاحظة: يجب تعديل دالة checkPassword في ملف main-secure.js لإضافة استدعاء hideDiscordButton() **
-        // بما أنني لا أستطيع تعديل ملف خارجي (main-secure.js)، سأفترض أن لديك نسخة محلية من دالة checkPassword() هنا أو أنك ستقوم بتعديلها يدوياً.
-        
-        // كمثال توضيحي، إذا كانت دالة checkPassword موجودة هنا:
-        /*
-        function checkPassword() {
-            // ... منطق التحقق من الكود ...
-            if (access_successful) {
-                // إظهار الإطار
-                document.getElementById('contentFrame').style.display = 'block';
-                document.getElementById('mainContainer').style.display = 'none';
-                // إخفاء زر الديسكورد بعد نجاح تسجيل الدخول
-                hideDiscordButton(); // <--- هذا هو التعديل المطلوب
-            }
-            // ...
-        }
-        */
-        
-        // باقي دوال تغيير كلمة المرور
         function showChangePasswordModal() {
             document.getElementById('changePasswordModal').style.display = 'flex';
             document.getElementById('oldPasswordInput').value = '';
@@ -583,14 +537,17 @@
             }
         }
         
+        // تم إزالة دوال الإشعارات والـ alertModal
 
         document.addEventListener('click', function(e) {
+            // توقف عند النقر خارج نموذج تغيير كلمة المرور
             if (e.target.id === 'changePasswordModal') {
                 hideChangePasswordModal();
             }
         });
 
         document.addEventListener('click', function(e) {
+            // منع إغلاق نموذج تغيير كلمة المرور بالنقر داخل المحتوى
             if (e.target.closest('.change-password-content')) {
                 e.stopPropagation();
             }
